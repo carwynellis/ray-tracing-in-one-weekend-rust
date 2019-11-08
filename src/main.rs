@@ -5,10 +5,12 @@ fn main() -> std::io::Result<()> {
     let nx = 200;
     let ny = 100;
 
-    let mut file = File::create("image.ppm")?;
+    let file_name = "image.ppm";
+
+    let mut file = File::create(file_name)?;
 
     // Write PPM file header.
-    file.write_fmt(format_args!("P3\n{}\n{}\n255\n", nx, ny));
+    file.write_fmt(format_args!("P3\n{}\n{}\n255\n", nx, ny))?;
 
     for y in (0..ny).rev() {
         for x in 0..nx {
@@ -18,7 +20,7 @@ fn main() -> std::io::Result<()> {
             let ir = (255.99 * r) as i64;
             let ig = (255.99 * g) as i64;
             let ib = (255.99 * b) as i64;
-            file.write_fmt(format_args!("{} {} {}\n", ir, ig, ib));
+            file.write_fmt(format_args!("{} {} {}\n", ir, ig, ib))?;
         }
     }
 
