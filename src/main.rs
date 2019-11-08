@@ -14,8 +14,8 @@ fn main() -> std::io::Result<()> {
 
     for y in (0..ny).rev() {
         for x in 0..nx {
-            let r = x as f64 / nx as f64;
-            let g = y as f64 / ny as f64;
+            let r = f64::from(x) / f64::from(nx);
+            let g = f64::from(y) / f64::from(ny);
             let b = 0.2;
             let ir = (255.99 * r) as i64;
             let ig = (255.99 * g) as i64;
