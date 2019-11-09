@@ -1,6 +1,9 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+mod vec3;
+use vec3::Vec3;
+
 fn main() -> std::io::Result<()> {
     let nx = 200;
     let ny = 100;
@@ -17,10 +20,16 @@ fn main() -> std::io::Result<()> {
             let r = f64::from(x) / f64::from(nx);
             let g = f64::from(y) / f64::from(ny);
             let b = 0.2;
-            let ir = (255.99 * r) as i64;
-            let ig = (255.99 * g) as i64;
-            let ib = (255.99 * b) as i64;
-            file.write_fmt(format_args!("{} {} {}\n", ir, ig, ib))?;
+            let pixel = Vec3 {
+                x: (255.99 * r),
+                y: (255.99 * g),
+                z: (255.99 * b)
+            };
+            file.write_fmt(format_args!("{} {} {}\n",
+                pixel.r() as i64,
+                pixel.g() as i64,
+                pixel.b() as i64,
+            ))?;
         }
     }
 
