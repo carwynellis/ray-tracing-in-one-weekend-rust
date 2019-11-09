@@ -7,7 +7,7 @@ use std::cmp::PartialEq;
 
 // Class representing a point in three dimensional space.
 // This is also used to store colour data during rendering.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -26,6 +26,11 @@ impl Vec3 {
 
     pub fn length(&self) -> f64 {
         self.squared_length().sqrt()
+    }
+
+    // Divide this vector by its length to generate a unit vector that has length 1.
+    pub fn unit_vector(&self) -> Vec3 {
+        *self / self.length()
     }
 
 }
@@ -160,14 +165,14 @@ mod tests {
 
     #[test]
     fn test_multiply_vec3_by_f64_operator() {
-        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
-        assert_eq!(v1 * 0.5, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
+        let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        assert_eq!(v * 0.5, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
     }
 
     #[test]
     fn test_multiply_f64_by_vec3_operator() {
-        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
-        assert_eq!(0.5 * v1, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
+        let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        assert_eq!(0.5 * v, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
     }
 
     #[test]
@@ -179,7 +184,14 @@ mod tests {
 
     #[test]
     fn test_divide_by_f64_operator() {
-        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
-        assert_eq!(v1 / 2.0, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
+        let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        assert_eq!(v / 2.0, Vec3 { x: 0.5, y: 1.0, z: 1.5 })
+    }
+
+    #[test]
+    fn test_unit_vector() {
+        let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        // Total length of unit vector should be one.
+        assert_eq!(v.unit_vector().length(), 1.0)
     }
 }
