@@ -17,18 +17,16 @@ fn main() -> std::io::Result<()> {
 
     for y in (0..ny).rev() {
         for x in 0..nx {
-            let r = f64::from(x) / f64::from(nx);
-            let g = f64::from(y) / f64::from(ny);
-            let b = 0.2;
-            let pixel = Vec3 {
-                x: (255.99 * r),
-                y: (255.99 * g),
-                z: (255.99 * b)
+            let v = Vec3 {
+                x:  f64::from(x) / f64::from(nx),
+                y:  f64::from(y) / f64::from(ny),
+                z:  0.2,
             };
+            let max = 255.99;
             file.write_fmt(format_args!("{} {} {}\n",
-                pixel.r() as i64,
-                pixel.g() as i64,
-                pixel.b() as i64,
+                (max * v.r()) as i64,
+                (max * v.g()) as i64,
+                (max * v.b()) as i64,
             ))?;
         }
     }
