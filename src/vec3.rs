@@ -41,11 +41,11 @@ impl Vec3 {
     // Compute the cross product of this and another Vec3
     // Implementation verified with https://betterexplained.com/articles/cross-product/
     pub fn cross(&self, other: Vec3) -> Vec3 {
-      Vec3 {
-        x: (self.y * other.z) - (self.z * other.y),
-        y: -((self.x * other.z) - (self.z * other.x)),
-        z: (self.x * other.y) - (self.y * other.x)
-      }
+        Vec3 {
+            x: (self.y * other.z) - (self.z * other.y),
+            y: -((self.x * other.z) - (self.z * other.x)),
+            z: (self.x * other.y) - (self.y * other.x)
+        }
     }
 }
 
@@ -96,7 +96,7 @@ impl Mul<f64> for Vec3 {
     type Output = Vec3;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Vec3 { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs}
+        Vec3 { x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
     }
 }
 
@@ -126,7 +126,6 @@ impl Div<f64> for Vec3 {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
     #[test]
@@ -154,7 +153,7 @@ mod tests {
     #[test]
     fn test_unary_minus_operator() {
         let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
-        assert_eq!(-v, Vec3 { x: -1.0, y: -2.0, z: -3.0} )
+        assert_eq!(-v, Vec3 { x: -1.0, y: -2.0, z: -3.0 })
     }
 
     #[test]

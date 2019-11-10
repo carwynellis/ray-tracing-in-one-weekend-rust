@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::prelude::*;
 
 mod vec3;
+mod ray;
+
 use vec3::Vec3;
 
 fn main() -> std::io::Result<()> {
