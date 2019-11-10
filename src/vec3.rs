@@ -33,6 +33,20 @@ impl Vec3 {
         *self / self.length()
     }
 
+    // Compute the dot product of this and another Vec3
+    pub fn dot(&self, other: Vec3) -> f64 {
+        (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
+    }
+
+    // Compute the cross product of this and another Vec3
+    // Implementation verified with https://betterexplained.com/articles/cross-product/
+    pub fn cross(&self, other: Vec3) -> Vec3 {
+      Vec3 {
+        x: (self.y * other.z) - (self.z * other.y),
+        y: -((self.x * other.z) - (self.z * other.x)),
+        z: (self.x * other.y) - (self.y * other.x)
+      }
+    }
 }
 
 // Vec3 equality
@@ -124,6 +138,20 @@ mod tests {
     }
 
     #[test]
+    fn test_equality_returns_true_for_two_equal_vectors() {
+        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        let v2 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        assert_eq!(v1 == v2, true)
+    }
+
+    #[test]
+    fn test_equality_returns_false_for_two_unequal_vectors() {
+        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        let v2 = Vec3 { x: 2.0, y: 3.0, z: 4.0 };
+        assert_eq!(v1 == v2, false)
+    }
+
+    #[test]
     fn test_unary_minus_operator() {
         let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
         assert_eq!(-v, Vec3 { x: -1.0, y: -2.0, z: -3.0} )
@@ -193,5 +221,19 @@ mod tests {
         let v = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
         // Total length of unit vector should be one.
         assert_eq!(v.unit_vector().length(), 1.0)
+    }
+
+    #[test]
+    fn test_dot_product() {
+        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        let v2 = Vec3 { x: 2.0, y: 2.0, z: 2.0 };
+        assert_eq!(v1.dot(v2), 12.0)
+    }
+
+    #[test]
+    fn test_cross_product() {
+        let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+        let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
+        assert_eq!(v1.cross(v2), Vec3 { x: -3.0, y: 6.0, z: -3.0 })
     }
 }
