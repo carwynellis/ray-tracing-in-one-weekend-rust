@@ -10,23 +10,35 @@ use ray::Ray;
 // Determine if ray intersects a sphere. This will be the case where the discriminant is greater
 // than zero, which indicates if there are one or two real solutions to the quadratic equation
 // that describes the intersection of a ray with a sphere.
-fn hit_sphere(centre: Vec3, radius: f64, r: Ray) -> bool {
+fn hit_sphere(centre: Vec3, radius: f64, r: Ray) -> f64 {
     let oc = r.origin - centre;
     let a = r.direction.dot(r.direction);
     let b = 2.0 * oc.dot(r.direction);
     let c = oc.dot(oc) - (radius * radius);
     let discriminant = (b * b) - (4.0 * a * c);
-    return discriminant > 0.0;
+    if discriminant < 0.0 {
+        return -1.0;
+    }
+    else {
+        return (-b - discriminant.sqrt()) / (2.0 * a);
+    }
 }
 
 // Compute a linear blend between white and blue depending on the value of the y coordinate.
-// Show intersection of ray with a sphere.
+// Show intersection of ray with a sphere and map the surface normal to a colour.
 fn colour(r: Ray) -> Vec3 {
-    // If the ray intersects the sphere, return red, otherwise fallback to the gradient.
-    if hit_sphere(Vec3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5, r ) {
-        return Vec3 { x: 1.0, y: 0.0, z: 0.0 };
+    let t =  hit_sphere(Vec3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5, r);
+    // If we hit the sphere, compute the surface normal and use this to determine the pixel colour.
+    if t > 0.0 {
+        let normal = (r.point_at_parameter(t) - Vec3 { x: 0.0, y: 0.0, z: -1.0 }).unit_vector();
+        return 0.5 * Vec3 {
+            x: normal.x + 1.0,
+            y: normal.y + 1.0,
+            z: normal.z + 1.0
+        }
     }
     else {
+        // Ray intersects nothing so return gradient.
         let unit_direction = r.direction.unit_vector();
         let t = 0.5 * (unit_direction.y + 1.0);
         return (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 };
@@ -34,8 +46,8 @@ fn colour(r: Ray) -> Vec3 {
 }
 
 fn main() -> std::io::Result<()> {
-    let nx = 200;
-    let ny = 100;
+    let nx = 800;
+    let ny = 400;
 
     let lower_left_corner = Vec3 { x: -2.0, y: -1.0, z: -1.0 };
     let horizontal = Vec3 { x: 4.0, y: 0.0, z: 0.0 };
