@@ -1,7 +1,7 @@
 use crate::vec3::Vec3;
 
 // Class representing a ray from a given origin that travels in a given direction.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Ray {
     pub origin: Vec3,
     pub direction: Vec3,
