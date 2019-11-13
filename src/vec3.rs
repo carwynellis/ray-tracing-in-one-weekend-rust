@@ -4,6 +4,7 @@ use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
 use std::cmp::PartialEq;
+use std::fmt::{Display, Formatter, Error};
 
 // Class representing a point in three dimensional space.
 // This is also used to store colour data during rendering.
@@ -121,6 +122,12 @@ impl Div<f64> for Vec3 {
 
     fn div(self, rhs: f64) -> Self::Output {
         Vec3 { x: self.x / rhs, y: self.y / rhs, z: self.z / rhs }
+    }
+}
+
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        return write!(f, "Vec3(x: {}, y: {}, z: {})", self.x, self.y, self.z);
     }
 }
 

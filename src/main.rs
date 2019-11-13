@@ -3,6 +3,8 @@ use std::io::prelude::*;
 
 mod vec3;
 mod ray;
+mod hitable;
+mod sphere;
 
 use vec3::Vec3;
 use ray::Ray;
