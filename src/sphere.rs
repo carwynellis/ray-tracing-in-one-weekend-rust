@@ -4,7 +4,7 @@ use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
 
 #[derive(Debug)]
-struct Sphere {
+pub struct Sphere {
     pub centre: Vec3,
     pub radius: f64
 }

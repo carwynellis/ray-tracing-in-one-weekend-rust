@@ -5,6 +5,7 @@ mod vec3;
 mod ray;
 mod hitable;
 mod sphere;
+mod hitable_list;
 
 use vec3::Vec3;
 use ray::Ray;
