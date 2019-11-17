@@ -6,6 +6,7 @@ use std::ops::Div;
 use std::cmp::PartialEq;
 use std::fmt::{Display, Formatter, Error};
 
+// TODO - should we be taking references to another vector where we operate on another vector?
 // Class representing a point in three dimensional space.
 // This is also used to store colour data during rendering.
 #[derive(Debug, Copy, Clone)]

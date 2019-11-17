@@ -44,7 +44,7 @@ fn main() -> std::io::Result<()> {
     let world = HitableList {
         hitables: vec![
             &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5 },
-            &Sphere { centre: Vec3 { x: 0.0, y: -100.0, z: -1.0 }, radius: 100.0},
+            &Sphere { centre: Vec3 { x: 0.0, y: -100.5, z: -1.0 }, radius: 100.0},
         ]
     };
 

@@ -1,8 +1,6 @@
 use crate::hitable::HitRecord;
 use crate::ray::Ray;
 use crate::hitable::Hitable;
-use crate::vec3::Vec3;
-use crate::sphere::Sphere;
 
 // TODO - review lifetime parameters. Are they correct here?
 #[derive(Clone)]
