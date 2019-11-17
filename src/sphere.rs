@@ -3,7 +3,7 @@ use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sphere {
     pub centre: Vec3,
     pub radius: f64

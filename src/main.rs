@@ -9,42 +9,26 @@ mod hitable_list;
 
 use vec3::Vec3;
 use ray::Ray;
-
-// Determine if ray intersects a sphere. This will be the case where the discriminant is greater
-// than zero, which indicates if there are one or two real solutions to the quadratic equation
-// that describes the intersection of a ray with a sphere.
-fn hit_sphere(centre: Vec3, radius: f64, r: Ray) -> f64 {
-    let oc = r.origin - centre;
-    let a = r.direction.dot(r.direction);
-    let b = 2.0 * oc.dot(r.direction);
-    let c = oc.dot(oc) - (radius * radius);
-    let discriminant = (b * b) - (4.0 * a * c);
-    if discriminant < 0.0 {
-        return -1.0;
-    }
-    else {
-        return (-b - discriminant.sqrt()) / (2.0 * a);
-    }
-}
+use hitable_list::HitableList;
+use sphere::Sphere;
+use hitable::Hitable;
 
 // Compute a linear blend between white and blue depending on the value of the y coordinate.
 // Show intersection of ray with a sphere and map the surface normal to a colour.
-fn colour(r: Ray) -> Vec3 {
-    let t =  hit_sphere(Vec3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5, r);
-    // If we hit the sphere, compute the surface normal and use this to determine the pixel colour.
-    if t > 0.0 {
-        let normal = (r.point_at_parameter(t) - Vec3 { x: 0.0, y: 0.0, z: -1.0 }).unit_vector();
-        return 0.5 * Vec3 {
-            x: normal.x + 1.0,
-            y: normal.y + 1.0,
-            z: normal.z + 1.0
+fn colour<T: Hitable>(r: Ray, world: &T) -> Vec3 {
+    return match world.hit(r, 0.0, std::f64::MAX) {
+        Some(hit) => {
+            0.5 * Vec3 {
+                x: hit.normal.x + 1.0,
+                y: hit.normal.y + 1.0,
+                z: hit.normal.z + 1.0
+            }
         }
-    }
-    else {
-        // Ray intersects nothing so return gradient.
-        let unit_direction = r.direction.unit_vector();
-        let t = 0.5 * (unit_direction.y + 1.0);
-        return (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 };
+        None => {
+            let unit_direction = r.direction.unit_vector();
+            let t = 0.5 * (unit_direction.y + 1.0);
+            (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 }
+        }
     }
 }
 
@@ -56,6 +40,13 @@ fn main() -> std::io::Result<()> {
     let horizontal = Vec3 { x: 4.0, y: 0.0, z: 0.0 };
     let vertical = Vec3 { x: 0.0, y: 2.0, z: 0.0 };
     let origin = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
+
+    let world = HitableList {
+        hitables: vec![
+            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5 },
+            &Sphere { centre: Vec3 { x: 0.0, y: -100.0, z: -1.0 }, radius: 100.0},
+        ]
+    };
 
     let file_name = "image.ppm";
 
@@ -72,7 +63,7 @@ fn main() -> std::io::Result<()> {
                 origin,
                 direction: lower_left_corner + (u * horizontal) + (v * vertical)
             };
-            let colour = colour(r);
+            let colour = colour(r, &world);
             let max = 255.99;
             file.write_fmt(format_args!("{} {} {}\n",
                 (max * colour.r()) as i64,

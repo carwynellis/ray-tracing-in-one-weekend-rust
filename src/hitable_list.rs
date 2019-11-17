@@ -4,11 +4,13 @@ use crate::hitable::Hitable;
 use crate::vec3::Vec3;
 use crate::sphere::Sphere;
 
-pub struct HitableList {
-    pub hitables: Vec<Box<dyn Hitable>>
+// TODO - review lifetime parameters. Are they correct here?
+#[derive(Clone)]
+pub struct HitableList<'a> {
+    pub hitables: Vec<&'a dyn Hitable>
 }
 
-impl Hitable for HitableList {
+impl Hitable for HitableList<'_> {
     fn hit(&self, r: Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         // TODO - try this without any local mutable state.
         let mut result = None;
@@ -44,7 +46,7 @@ mod tests {
             direction: Vec3 { x: -2.0, y: -2.0, z: -2.0 },
         };
         let hitables = HitableList {
-            hitables: vec![Box::new(sphere)]
+            hitables: vec![&sphere]
         };
         let hit = hitables.hit(ray, 0.0, 1.0);
 
