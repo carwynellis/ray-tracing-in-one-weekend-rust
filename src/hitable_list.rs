@@ -32,6 +32,8 @@ impl Hitable for HitableList<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::vec3::Vec3;
+    use crate::sphere::Sphere;
 
     #[test]
     fn test_hit_returns_hit_record_if_one_of_the_objects_intersects_the_ray() {

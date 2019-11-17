@@ -19,14 +19,3 @@ pub trait Hitable {
     fn hit(&self, r: Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
 }
 
-//// Attempt to allow Clone of Hitable.
-//// TODO - what other, perhaps better approaches are there?
-//trait HitableClone {
-//    fn hitable_clone(&self) -> Box<dyn Hitable>;
-//}
-
-//impl <T> HitableClone for T where T: Hitable + Clone {
-//    fn hitable_clone(&self) -> Box<dyn Hitable> {
-//        Box::new(self.clone())
-//    }
-//}
