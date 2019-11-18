@@ -2,11 +2,23 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
+use rand::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Sphere {
     pub centre: Vec3,
     pub radius: f64
+}
+
+pub fn random_point_in_unit_sphere() -> Vec3 {
+    let random_vec3 = Vec3 { x: random(), y: random(), z: random() };
+    let p = 2.0 * random_vec3 - Vec3 { x: 1.0, y: 1.0, z: 1.0 };
+    if p.squared_length() >= 1.0 {
+        return random_point_in_unit_sphere();
+    }
+    else {
+        return p;
+    }
 }
 
 impl Hitable for Sphere {

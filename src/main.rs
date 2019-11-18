@@ -15,19 +15,20 @@ use vec3::Vec3;
 use ray::Ray;
 use hitable_list::HitableList;
 use sphere::Sphere;
+use sphere::random_point_in_unit_sphere;
 use hitable::Hitable;
 use camera::Camera;
 
 // Compute a linear blend between white and blue depending on the value of the y coordinate.
 // Show intersection of ray with a sphere and map the surface normal to a colour.
 fn colour<T: Hitable>(r: Ray, world: &T) -> Vec3 {
-    return match world.hit(r, 0.0, std::f64::MAX) {
+// We need to ignore hits very near to 0 which arise from floating point approximations.
+    let near_zero = 0.001;
+
+    return match world.hit(r, near_zero, std::f64::MAX) {
         Some(hit) => {
-            0.5 * Vec3 {
-                x: hit.normal.x + 1.0,
-                y: hit.normal.y + 1.0,
-                z: hit.normal.z + 1.0
-            }
+            let target = hit.p + hit.normal + random_point_in_unit_sphere();
+            return 0.5 * colour( Ray { origin: hit.p, direction: target - hit.p }, world);
         }
         None => {
             let unit_direction = r.direction.unit_vector();
@@ -80,10 +81,17 @@ fn main() -> std::io::Result<()> {
                 |sum, v| sum + v
             ) / samples as f64;
 
+            // Apply simple square root gamma correction to generated values.
+            let gamma_corrected = Vec3 {
+                x: colour.x.sqrt(),
+                y: colour.y.sqrt(),
+                z: colour.z.sqrt(),
+            };
+
             file.write_fmt(format_args!("{} {} {}\n",
-                (max * colour.r()) as i64,
-                (max * colour.g()) as i64,
-                (max * colour.b()) as i64,
+                (max * gamma_corrected.r()) as i64,
+                (max * gamma_corrected.g()) as i64,
+                (max * gamma_corrected.b()) as i64,
             ))?;
         }
         // TODO - tidy this up
