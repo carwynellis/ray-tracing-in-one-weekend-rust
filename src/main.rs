@@ -10,6 +10,7 @@ mod hitable;
 mod sphere;
 mod hitable_list;
 mod camera;
+mod material;
 
 use vec3::Vec3;
 use ray::Ray;
@@ -18,17 +19,23 @@ use sphere::Sphere;
 use sphere::random_point_in_unit_sphere;
 use hitable::Hitable;
 use camera::Camera;
+use crate::material::{Lambertian, Metal};
+
+const MAXIMUM_RECURSION_DEPTH: i8 = 50;
+const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
 
 // Compute a linear blend between white and blue depending on the value of the y coordinate.
 // Show intersection of ray with a sphere and map the surface normal to a colour.
-fn colour<T: Hitable>(r: Ray, world: &T) -> Vec3 {
-// We need to ignore hits very near to 0 which arise from floating point approximations.
-    let near_zero = 0.001;
-
-    return match world.hit(r, near_zero, std::f64::MAX) {
+fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
+    return match world.hit(r, NEAR_ZERO, std::f64::MAX) {
         Some(hit) => {
-            let target = hit.p + hit.normal + random_point_in_unit_sphere();
-            return 0.5 * colour( Ray { origin: hit.p, direction: target - hit.p }, world);
+            if depth < 50 {
+                let scattered = hit.material.scatter(&r, &hit);
+                return colour(scattered, world, hit.material.albedo() * accumulator, depth + 1)
+            }
+            else {
+                return Vec3 { x: 0.0, y: 0.0, z: 0.0 }
+            }
         }
         None => {
             let unit_direction = r.direction.unit_vector();
@@ -52,8 +59,10 @@ fn main() -> std::io::Result<()> {
 
     let world = HitableList {
         hitables: vec![
-            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5 },
-            &Sphere { centre: Vec3 { x: 0.0, y: -100.5, z: -1.0 }, radius: 100.0},
+            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.3, z: 0.3 }} },
+            &Sphere { centre: Vec3 { x: 0.0, y: 100.5, z: -1.0 }, radius: 100.0, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.0 }} },
+            &Sphere { centre: Vec3 { x: 1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.6, z: 0.2 }} },
+            &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.8 }} },
         ]
     };
 
@@ -75,7 +84,7 @@ fn main() -> std::io::Result<()> {
                 let u = (i as f64 + random::<f64>()) / nx as f64;
                 let v = (j as f64 + random::<f64>()) / ny as f64;
                 let r = camera.get_ray(u, v);
-                colour(r, &world)
+                colour(r, &world, Vec3 { x: 0.0, y: 0.0, z: 0.0 }, 0)
             }).fold(
                 Vec3 { x: 0.0, y: 0.0, z: 0.0},
                 |sum, v| sum + v
