@@ -19,7 +19,7 @@ use sphere::Sphere;
 use sphere::random_point_in_unit_sphere;
 use hitable::Hitable;
 use camera::Camera;
-use crate::material::{Lambertian, Metal};
+use crate::material::{Lambertian, Metal, Dielectric};
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
@@ -55,10 +55,10 @@ fn main() -> std::io::Result<()> {
 
     let world = HitableList {
         hitables: vec![
-            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.3, z: 0.3 }} },
+            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Lambertian { albedo: Vec3 { x: 0.1, y: 0.2, z: 0.5 }} },
             &Sphere { centre: Vec3 { x: 0.0, y: -100.5, z: -1.0 }, radius: 100.0, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.0 }} },
             &Sphere { centre: Vec3 { x: 1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.6, z: 0.2 }, fuzziness: 1.0 } },
-            &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.8 }, fuzziness: 0.3 } },
+            &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Dielectric { refractive_index: 1.5} },
         ]
     };
 
