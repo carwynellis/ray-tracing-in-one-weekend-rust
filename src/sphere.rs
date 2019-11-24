@@ -47,9 +47,9 @@ impl Hitable for Sphere<'_> {
 
             let solution2 = (-b + discriminant.sqrt()) / a;
             if solution2 < tmax && solution2 > tmin {
-                let intersection_point = r.point_at_parameter(solution1);
+                let intersection_point = r.point_at_parameter(solution2);
                 let hit_record = HitRecord {
-                    t: solution1,
+                    t: solution2,
                     p: intersection_point,
                     normal: (intersection_point - self.centre) / self.radius,
                     material: self.material,
