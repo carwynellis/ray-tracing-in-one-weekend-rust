@@ -47,12 +47,18 @@ fn main() -> std::io::Result<()> {
     let ny = 400;
     let samples = 100;
 
+    let look_from = Vec3 { x: 3.0, y: 3.0, z: 2.0 };
+    let look_at = Vec3 { x: 0.0, y: 0.0, z: -1.0 };
+    let focus_distance = (look_from - look_at).length();
+
     let camera = Camera {
-        look_from: Vec3 { x: -2.0, y: 2.0, z: 1.0 },
-        look_at: Vec3 { x: 0.0, y: 0.0, z: -1.0 },
+        look_from: look_from,
+        look_at: look_at,
         vertical_up: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
         vertical_field_of_view: 20.0,
-        aspect_ratio: nx as f64 / ny as f64
+        aspect_ratio: nx as f64 / ny as f64,
+        aperture: 2.0,
+        focus_distance: focus_distance
     };
 
     let world = HitableList {
