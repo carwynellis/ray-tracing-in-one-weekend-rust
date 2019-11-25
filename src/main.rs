@@ -20,6 +20,7 @@ use sphere::random_point_in_unit_sphere;
 use hitable::Hitable;
 use camera::Camera;
 use crate::material::{Lambertian, Metal, Dielectric};
+use std::f64::consts::PI;
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
@@ -47,10 +48,11 @@ fn main() -> std::io::Result<()> {
     let samples = 100;
 
     let camera = Camera {
-        lower_left_corner: Vec3 { x: -2.0, y: -1.0, z: -1.0 },
-        horizontal: Vec3 { x: 4.0, y: 0.0, z: 0.0 },
-        vertical: Vec3 { x: 0.0, y: 2.0, z: 0.0 },
-        origin: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
+        look_from: Vec3 { x: -2.0, y: 2.0, z: 1.0 },
+        look_at: Vec3 { x: 0.0, y: 0.0, z: -1.0 },
+        vertical_up: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+        vertical_field_of_view: 20.0,
+        aspect_ratio: nx as f64 / ny as f64
     };
 
     let world = HitableList {
@@ -61,6 +63,18 @@ fn main() -> std::io::Result<()> {
             &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Dielectric { refractive_index: 1.5} },
         ]
     };
+
+//    let r = (PI / 4.0).cos();
+
+//    let s1 = Sphere { centre: Vec3 { x: -r, y: 0.0, z: -1.0 }, radius: r, material: &Lambertian { albedo: Vec3 { x: 0.0, y: 0.0, z: 1.0 }} };
+//    let s2 = Sphere { centre: Vec3 { x: r, y: 0.0, z: -1.0 }, radius: r, material: &Lambertian { albedo: Vec3 { x: 1.0, y: 0.0, z: 0.0 }} };
+
+//    let world = HitableList {
+//        hitables: vec![
+//            &s1,
+//            &s2,
+//        ]
+//    };
 
     let file_name = "image.ppm";
 
