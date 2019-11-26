@@ -21,6 +21,7 @@ use hitable::Hitable;
 use camera::Camera;
 use crate::material::{Lambertian, Metal, Dielectric};
 use std::f64::consts::PI;
+use std::borrow::Borrow;
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
@@ -42,14 +43,81 @@ fn background_colour(ray: &Ray) -> Vec3 {
     return (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 }
 }
 
+//fn random_scene() -> Vec<&'static Sphere<'static>> {
+//    // Randomly generate a number of small spheres.
+//    let small_spheres: Vec<&Sphere> = (-11..11).map(|a| {
+//        (-11..11).map(|b| {
+//            let choose_material = random::<f64>();
+//            let centre = Vec3 {
+//                x: a as f64 + 0.9 * random::<f64>(),
+//                y: 0.2,
+//                z: b as f64 + 0.9 * random::<f64>()
+//            };
+//            if (centre - Vec3 { x: 4.0, y: 0.2, z: 0.0 }).length() > 0.9 {
+//               if choose_material < 0.8 {
+//                   // Create a diffuse sphere
+//                   Some(&Sphere {
+//                       centre,
+//                       radius: 0.2,
+//                       material: &Lambertian {
+//                           albedo: Vec3 {
+//                               x: random::<f64>() * random::<f64>(),
+//                               y: random::<f64>() * random::<f64>(),
+//                               z: random::<f64>() * random::<f64>(),
+//                           }
+//                        }
+//                    })
+//                }
+//                else if choose_material < 0.95 {
+//                    // Create a metal sphere
+//                    Some(&Sphere {
+//                        centre,
+//                        radius: 0.2,
+//                        material: &Metal {
+//                            albedo: Vec3 {
+//                                x: 0.5 * (1.0 + random::<f64>()),
+//                                y: 0.5 * (1.0 + random::<f64>()),
+//                                z: 0.5 * (1.0 + random::<f64>()),
+//                            },
+//                            fuzziness: 0.5 * random::<f64>()
+//                        }
+//                    })
+//                }
+//                else {
+//                    // Create a glass sphere
+//                    Some(&Sphere {
+//                        centre,
+//                        radius: 0.2,
+//                        material: &Dielectric { refractive_index: 1.5}
+//                    })
+//                }
+//            }
+//            else { None }
+//        }).flatten()
+//    }).flatten().collect();
+
+//    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: &Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }}};
+//    // Three more spheres that sit in the centre of the image.
+//    let glass_sphere = &Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Dielectric { refractive_index: 1.5 }};
+//    let matte_sphere = &Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } }};
+//    let metal_sphere = &Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 }};
+
+//    let all_spheres = vec![
+//        small_spheres,
+//        vec![&ground, &glass_sphere, &matte_sphere, &metal_sphere]
+//        ].into_iter().flatten().collect();
+
+//    return all_spheres;
+//}
+
 fn main() -> std::io::Result<()> {
-    let nx = 800;
-    let ny = 400;
+    let nx = 1200;
+    let ny = 800;
     let samples = 100;
 
-    let look_from = Vec3 { x: 3.0, y: 3.0, z: 2.0 };
-    let look_at = Vec3 { x: 0.0, y: 0.0, z: -1.0 };
-    let focus_distance = (look_from - look_at).length();
+    let look_from = Vec3 { x: 13.0, y: 2.0, z: 3.0 };
+    let look_at = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
+    let focus_distance = 10.0;
 
     let camera = Camera {
         look_from: look_from,
@@ -57,30 +125,42 @@ fn main() -> std::io::Result<()> {
         vertical_up: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
         vertical_field_of_view: 20.0,
         aspect_ratio: nx as f64 / ny as f64,
-        aperture: 2.0,
+        aperture: 0.1,
         focus_distance: focus_distance
     };
 
-    let world = HitableList {
-        hitables: vec![
-            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Lambertian { albedo: Vec3 { x: 0.1, y: 0.2, z: 0.5 }} },
-            &Sphere { centre: Vec3 { x: 0.0, y: -100.5, z: -1.0 }, radius: 100.0, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.0 }} },
-            &Sphere { centre: Vec3 { x: 1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.6, z: 0.2 }, fuzziness: 1.0 } },
-            &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Dielectric { refractive_index: 1.5} },
-        ]
-    };
+//    let world = HitableList {
+//        hitables: vec![
+//            &Sphere { centre: Vec3 { x: 0.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Lambertian { albedo: Vec3 { x: 0.1, y: 0.2, z: 0.5 }} },
+//            &Sphere { centre: Vec3 { x: 0.0, y: -100.5, z: -1.0 }, radius: 100.0, material: &Lambertian { albedo: Vec3 { x: 0.8, y: 0.8, z: 0.0 }} },
+//            &Sphere { centre: Vec3 { x: 1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Metal { albedo: Vec3 { x: 0.8, y: 0.6, z: 0.2 }, fuzziness: 1.0 } },
+//            &Sphere { centre: Vec3 { x: -1.0, y: 0.0, z: -1.0 }, radius: 0.5, material: &Dielectric { refractive_index: 1.5} },
+//        ]
+//    };
 
 //    let r = (PI / 4.0).cos();
 
 //    let s1 = Sphere { centre: Vec3 { x: -r, y: 0.0, z: -1.0 }, radius: r, material: &Lambertian { albedo: Vec3 { x: 0.0, y: 0.0, z: 1.0 }} };
 //    let s2 = Sphere { centre: Vec3 { x: r, y: 0.0, z: -1.0 }, radius: r, material: &Lambertian { albedo: Vec3 { x: 1.0, y: 0.0, z: 0.0 }} };
+//    let spheres = vec![&s1, &s2].into_iter().map(|s| s as &dyn Hitable).collect();
 
 //    let world = HitableList {
-//        hitables: vec![
-//            &s1,
-//            &s2,
-//        ]
+//        hitables: spheres,
 //    };
+
+    // Initial attempt at rendering just the main static spheres.
+    // TODO - resolve the reference lifetime fun and add the random spheres to the vector too.
+    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: &Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }}};
+    // Three more spheres that sit in the centre of the image.
+    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Dielectric { refractive_index: 1.5 }};
+    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } }};
+    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 }};
+
+    let all_spheres = vec![&ground, &glass_sphere, &matte_sphere, &metal_sphere].into_iter().map(|s| s as &dyn Hitable).collect();
+
+    let world = HitableList {
+        hitables: all_spheres
+    };
 
     let file_name = "image.ppm";
 

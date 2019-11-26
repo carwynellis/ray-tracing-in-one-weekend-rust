@@ -13,6 +13,7 @@ pub trait Material {
     fn albedo(&self) -> Vec3;
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Lambertian {
     pub albedo: Vec3
 }
