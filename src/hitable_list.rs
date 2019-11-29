@@ -16,12 +16,9 @@ impl Hitable for HitableList<'_> {
 
         for hitable in self.hitables.iter() {
             let hit = hitable.hit(r, tmin, closest_so_far);
-            match hit {
-                Some(ref h) => {
-                    result = hit;
-                    closest_so_far = h.t;
-                }
-                None => ()
+            if (hit.is_some()) {
+                result = hit;
+                &result.map(|h| closest_so_far = h.t);
             }
         }
 
@@ -41,7 +38,7 @@ mod tests {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: &Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }},
+            material: Box::new(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
