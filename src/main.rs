@@ -146,7 +146,7 @@ fn main() -> std::io::Result<()> {
 
     let max = 255.99;
 
-    println!("Rendering image...");
+    println!("Rendering scene to {}", file_name);
     for j in (0..ny).rev() {
         for i in 0..nx {
             // Sample the pixel a number of times with a random offset and average the result to
@@ -174,11 +174,11 @@ fn main() -> std::io::Result<()> {
                 (max * gamma_corrected.b()) as i64,
             ))?;
         }
-        // TODO - tidy this up
-        print!("Completed line {} of {}             \r", ny - j, ny);
+        let percent_complete = ((ny - j) as f64 / ny as f64) * 100.0;
+        print!("\r{percent:>4}% complete ", percent = percent_complete.round());
         stdout().flush()?;
     }
 
-    println!("Finished.");
+    println!("Finished");
     Ok(())
 }
