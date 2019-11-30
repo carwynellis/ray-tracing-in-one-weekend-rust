@@ -180,16 +180,21 @@ fn main() -> std::io::Result<()> {
         stdout().flush()?;
     }
 
-    println!("Writing image data...");
+    // TODO - review this and find a better way...
+    // Build string first and then write to file....
+    let mut formatted_data = "".to_string();
 
     image_data.into_iter().for_each(|pixel| {
-        file.write_fmt(format_args!("{} {} {}\n",
-            (max * pixel.r()) as i64,
-            (max * pixel.g()) as i64,
-            (max * pixel.b()) as i64,
-        )).expect("An error occurred when writing image data");
+        let line = format!("{} {} {}\n",
+           (max * pixel.r()) as i64,
+           (max * pixel.g()) as i64,
+           (max * pixel.b()) as i64,
+        );
+        formatted_data.push_str(&line);
     });
 
-    println!("Finished");
+    file.write_all(formatted_data.as_ref());
+
+    println!("\nFinished");
     Ok(())
 }
