@@ -146,6 +146,10 @@ fn main() -> std::io::Result<()> {
 
     let max = 255.99;
 
+    // Take writing to file off render path and do it at the end. Any faster?
+    // TODO - refactor to map over a range so we don't need a mut vec here?
+    let mut image_data = vec!();
+
     println!("Rendering scene to {}", file_name);
     for j in (0..ny).rev() {
         for i in 0..nx {
@@ -168,16 +172,23 @@ fn main() -> std::io::Result<()> {
                 z: colour.z.sqrt(),
             };
 
-            file.write_fmt(format_args!("{} {} {}\n",
-                (max * gamma_corrected.r()) as i64,
-                (max * gamma_corrected.g()) as i64,
-                (max * gamma_corrected.b()) as i64,
-            ))?;
+            image_data.push(gamma_corrected);
+
         }
         let percent_complete = ((ny - j) as f64 / ny as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());
         stdout().flush()?;
     }
+
+    println!("Writing image data...");
+
+    image_data.into_iter().for_each(|pixel| {
+        file.write_fmt(format_args!("{} {} {}\n",
+            (max * pixel.r()) as i64,
+            (max * pixel.g()) as i64,
+            (max * pixel.b()) as i64,
+        )).expect("An error occurred when writing image data");
+    });
 
     println!("Finished");
     Ok(())
