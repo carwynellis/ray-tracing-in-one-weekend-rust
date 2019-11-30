@@ -47,21 +47,21 @@ fn background_colour(ray: &Ray) -> Vec3 {
 fn main() -> std::io::Result<()> {
     let nx = 1200;
     let ny = 800;
-    let samples = 10;
+    let samples = 1;
 
     let look_from = Vec3 { x: 13.0, y: 2.0, z: 3.0 };
     let look_at = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
     let focus_distance = 10.0;
 
-    let camera = Camera {
-        look_from: look_from,
-        look_at: look_at,
-        vertical_up: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
-        vertical_field_of_view: 20.0,
-        aspect_ratio: nx as f64 / ny as f64,
-        aperture: 0.1,
-        focus_distance: focus_distance
-    };
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+        20.0,
+        nx as f64 / ny as f64,
+        0.1,
+        focus_distance
+    );
 
     // Randomly generate a number of small spheres.
     let mut small_spheres: Vec<Sphere> = vec![];
