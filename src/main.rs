@@ -16,13 +16,10 @@ use vec3::Vec3;
 use ray::Ray;
 use hitable_list::HitableList;
 use sphere::Sphere;
-use sphere::random_point_in_unit_sphere;
 use hitable::Hitable;
 use camera::Camera;
 use crate::material::{Lambertian, Metal, Dielectric};
-use std::f64::consts::PI;
 use std::borrow::Borrow;
-use std::ops::Deref;
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
@@ -65,8 +62,8 @@ fn main() -> std::io::Result<()> {
 
     // Randomly generate a number of small spheres.
     let mut small_spheres: Vec<Sphere> = vec![];
-    for a in (-11..11) {
-        for b in (-11..11) {
+    for a in -11..11 {
+        for b in -11..11 {
             let choose_material = random::<f64>();
             let centre = Vec3 {
                 x: a as f64 + 0.9 * random::<f64>(),
@@ -180,7 +177,7 @@ fn main() -> std::io::Result<()> {
         stdout().flush()?;
     }
 
-    // TODO - review this and find a better way...
+    // TODO - look into buffered writers...
     // Build string first and then write to file....
     let mut formatted_data = "".to_string();
 
@@ -193,7 +190,7 @@ fn main() -> std::io::Result<()> {
         formatted_data.push_str(&line);
     });
 
-    file.write_all(formatted_data.as_ref());
+    file.write_all(formatted_data.as_ref()).expect("Error writing to image file");
 
     println!("\nFinished");
     Ok(())

@@ -1,5 +1,5 @@
 [package]
-name = "ray-tracing-in-one-weekend-rust"
+name = "raytracer"
 version = "0.1.0"
 authors = ["Carwyn Ellis <carwynellis@gmail.com>"]
 edition = "2018"
@@ -13,3 +13,7 @@ rand = "0.7.2"
 # Enable optimizations for dev builds.
 opt-level = 3
 lto = true
+
+# Enable debug for profiling
+[profile.release]
+debug = true

@@ -19,7 +19,7 @@ pub struct Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Ray {
+    fn scatter(&self, _ray_in: &Ray, hit: &HitRecord) -> Ray {
         let target = hit.p + hit.normal + random_point_in_unit_sphere();
         return Ray { origin: hit.p, direction: target - hit.p };
     }

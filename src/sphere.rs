@@ -4,7 +4,6 @@ use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
 use crate::material::Material;
 use rand::prelude::*;
-use std::borrow::Borrow;
 
 pub struct Sphere {
     pub centre: Vec3,
