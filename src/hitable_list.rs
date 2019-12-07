@@ -9,7 +9,7 @@ pub struct HitableList<'a> {
 }
 
 impl Hitable for HitableList<'_> {
-    fn hit(&self, r: Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         // TODO - try this without any local mutable state.
         let mut result = None;
         let mut closest_so_far = tmax;

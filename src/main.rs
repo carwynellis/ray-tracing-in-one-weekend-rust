@@ -25,7 +25,7 @@ const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
 
 fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
-    match world.hit(r, NEAR_ZERO, std::f64::MAX) {
+    match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
         Some(ref hit) if depth < MAXIMUM_RECURSION_DEPTH => {
             let scattered = hit.material.scatter(&r, &hit);
             return colour(scattered, world, hit.material.albedo() * accumulator, depth + 1)

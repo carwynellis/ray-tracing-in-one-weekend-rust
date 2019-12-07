@@ -23,15 +23,15 @@ pub fn random_point_in_unit_sphere() -> Vec3 {
 }
 
 impl Hitable for Sphere {
-    fn hit(&self, r: Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         let oc = r.origin - self.centre;
         let a = r.direction.dot(r.direction);
         let b =  oc.dot(r.direction);
         let c = oc.dot(oc) - (self.radius.powi(2));
         let discriminant = (b * b) - (a * c);
 
-        // If discriminant is zero we have one or two real solutions to the quadratic equation that
-        // describes the intersection of the ray with the sphere.
+        // If discriminant is greater than zero we have one or two real solutions to the quadratic
+        // equation that describes the intersection of the ray with the sphere.
         if discriminant > 0.0 {
             let solution1 = (-b - discriminant.sqrt()) / a;
             if solution1 < tmax && solution1 > tmin {

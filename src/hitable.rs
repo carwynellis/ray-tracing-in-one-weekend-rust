@@ -19,6 +19,6 @@ impl Display for HitRecord<'_> {
 }
 
 pub trait Hitable {
-    fn hit(&self, r: Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
+    fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
 }
 
