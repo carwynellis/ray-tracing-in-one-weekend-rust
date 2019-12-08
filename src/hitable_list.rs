@@ -2,15 +2,14 @@ use crate::hitable::HitRecord;
 use crate::ray::Ray;
 use crate::hitable::Hitable;
 
-// TODO - review lifetime parameters. Are they correct here?
 #[derive(Clone)]
 pub struct HitableList<'a> {
     pub hitables: Vec<&'a dyn Hitable>
 }
 
 impl Hitable for HitableList<'_> {
+    // Note - this was implemented using fold, however the following runs around half the time.
     fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
-        // TODO - try this without any local mutable state.
         let mut result = None;
         let mut closest_so_far = tmax;
 
