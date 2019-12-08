@@ -47,7 +47,7 @@ mod tests {
         let hitables = HitableList {
             hitables: vec![&sphere]
         };
-        let hit = hitables.hit(ray, 0.0, 1.0);
+        let hit = hitables.hit(&ray, 0.0, 1.0);
 
         assert!(hit.is_some());
     }

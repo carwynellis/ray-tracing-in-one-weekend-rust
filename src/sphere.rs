@@ -78,7 +78,7 @@ mod tests {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
             direction: Vec3 { x: -2.0, y: -2.0, z: -2.0 },
         };
-        let hit = sphere.hit(ray, 0.0, 1.0);
+        let hit = sphere.hit(&ray, 0.0, 1.0);
 
         assert_eq!(hit.is_some(), true);
     }
@@ -94,7 +94,7 @@ mod tests {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
             direction: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
         };
-        let hit = sphere.hit(ray, 0.0, 1.0);
+        let hit = sphere.hit(&ray, 0.0, 1.0);
 
         // TODO - do we need a PartialEq impl on HitRecord instead?
         assert_eq!(hit.is_none(), true);
