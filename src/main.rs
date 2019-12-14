@@ -28,9 +28,9 @@ fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
     match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
         Some(ref hit) if depth < MAXIMUM_RECURSION_DEPTH => {
             let scattered = hit.material.scatter(&r, &hit);
-            return colour(scattered, world, hit.material.albedo() * accumulator, depth + 1)
+            colour(scattered, world, hit.material.albedo() * accumulator, depth + 1)
         }
-        _ => return accumulator
+        _ => accumulator
     }
 }
 
@@ -38,13 +38,13 @@ fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
 fn background_colour(ray: &Ray) -> Vec3 {
     let unit_direction = ray.direction.unit_vector();
     let t = 0.5 * (unit_direction.y + 1.0);
-    return (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 }
+    (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 }
 }
 
 fn main() -> std::io::Result<()> {
     let nx = 1200;
     let ny = 800;
-    let samples = 10;
+    let samples = 1;
 
     let look_from = Vec3 { x: 13.0, y: 2.0, z: 3.0 };
     let look_at = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
@@ -126,8 +126,8 @@ fn main() -> std::io::Result<()> {
 
     let mut spheres = vec![];
 
-    for i in 0..all_spheres.len() {
-        spheres.push(all_spheres[i].borrow() as &dyn Hitable)
+    for i in &all_spheres {
+        spheres.push(i.borrow() as &dyn Hitable)
     }
 
     let world = HitableList {

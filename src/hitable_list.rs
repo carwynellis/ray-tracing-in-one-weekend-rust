@@ -17,7 +17,7 @@ impl Hitable for HitableList<'_> {
             let hit = hitable.hit(r, tmin, closest_so_far);
             if hit.is_some() {
                 result = hit;
-                &result.map(|h| closest_so_far = h.t);
+                result.map(|h| closest_so_far = h.t);
             }
         }
 
