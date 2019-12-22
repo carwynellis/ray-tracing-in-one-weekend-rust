@@ -6,8 +6,8 @@ use std::borrow::Borrow;
 
 use raytracer::vec3::Vec3;
 use raytracer::ray::Ray;
-use raytracer::hitable_list::HitableList;
-use raytracer::sphere::Sphere;
+use raytracer::hitable::hitable_list::HitableList;
+use raytracer::hitable::sphere::Sphere;
 use raytracer::hitable::Hitable;
 use raytracer::camera::Camera;
 use raytracer::material::{Lambertian, Metal, Dielectric};

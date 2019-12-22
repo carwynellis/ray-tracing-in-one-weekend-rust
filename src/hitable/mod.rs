@@ -4,6 +4,9 @@ use crate::material::Material;
 
 use std::fmt::{Display, Formatter, Error};
 
+pub mod hitable_list;
+pub mod sphere;
+
 #[derive(Copy, Clone)]
 pub struct HitRecord<'a> {
     pub t: f64,

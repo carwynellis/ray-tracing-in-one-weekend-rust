@@ -2,7 +2,7 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 use std::f64::consts::PI;
 use rand::prelude::*;
-use crate::sphere::random_point_in_unit_sphere;
+use crate::hitable::sphere::random_point_in_unit_sphere;
 
 pub struct Camera {
     origin: Vec3,

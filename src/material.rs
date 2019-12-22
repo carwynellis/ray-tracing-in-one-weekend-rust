@@ -1,7 +1,7 @@
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
-use crate::sphere::random_point_in_unit_sphere;
+use crate::hitable::sphere::random_point_in_unit_sphere;
 use rand::prelude::*;
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {

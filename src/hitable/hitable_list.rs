@@ -29,7 +29,7 @@ impl Hitable for HitableList<'_> {
 mod tests {
     use super::*;
     use crate::vec3::Vec3;
-    use crate::sphere::Sphere;
+    use crate::hitable::sphere::Sphere;
     use crate::material::Lambertian;
 
     #[test]
