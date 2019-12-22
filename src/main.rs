@@ -2,24 +2,15 @@ use std::fs::File;
 use std::io::prelude::*;
 use rand::prelude::*;
 use std::io::stdout;
-
-// TODO - tidy up modules
-mod vec3;
-mod ray;
-mod hitable;
-mod sphere;
-mod hitable_list;
-mod camera;
-mod material;
-
-use vec3::Vec3;
-use ray::Ray;
-use hitable_list::HitableList;
-use sphere::Sphere;
-use hitable::Hitable;
-use camera::Camera;
-use crate::material::{Lambertian, Metal, Dielectric};
 use std::borrow::Borrow;
+
+use raytracer::vec3::Vec3;
+use raytracer::ray::Ray;
+use raytracer::hitable_list::HitableList;
+use raytracer::sphere::Sphere;
+use raytracer::hitable::Hitable;
+use raytracer::camera::Camera;
+use raytracer::material::{Lambertian, Metal, Dielectric};
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
