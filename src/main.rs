@@ -10,7 +10,9 @@ use raytracer::hitable::hitable_list::HitableList;
 use raytracer::hitable::sphere::Sphere;
 use raytracer::hitable::Hitable;
 use raytracer::camera::Camera;
-use raytracer::material::{Lambertian, Metal, Dielectric};
+use raytracer::material::lambertian::Lambertian;
+use raytracer::material::metal::Metal;
+use raytracer::material::dielectric::Dielectric;
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.

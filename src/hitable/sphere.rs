@@ -65,7 +65,7 @@ impl Hitable for Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::material::Lambertian;
+    use crate::material::lambertian::Lambertian;
 
     #[test]
     fn test_hit_returns_hit_record_if_ray_intersects_sphere() {

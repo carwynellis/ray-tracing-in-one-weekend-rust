@@ -30,7 +30,7 @@ mod tests {
     use super::*;
     use crate::vec3::Vec3;
     use crate::hitable::sphere::Sphere;
-    use crate::material::Lambertian;
+    use crate::material::lambertian::Lambertian;
 
     #[test]
     fn test_hit_returns_hit_record_if_one_of_the_objects_intersects_the_ray() {
