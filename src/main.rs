@@ -53,6 +53,25 @@ fn main() -> std::io::Result<()> {
         focus_distance
     );
 
+    let lambertians: Vec<Lambertian> = (0..100).map(|_| { Lambertian {
+        albedo: Vec3 {
+            x: random::<f64>() * random::<f64>(),
+            y: random::<f64>() * random::<f64>(),
+            z: random::<f64>() * random::<f64>(),
+        }
+    }}).collect();
+
+    let metals: Vec<Metal> = (0..100).map(|_| { Metal {
+        albedo: Vec3 {
+            x: 0.5 * (1.0 + random::<f64>()),
+            y: 0.5 * (1.0 + random::<f64>()),
+            z: 0.5 * (1.0 + random::<f64>()),
+        },
+        fuzziness: 0.5
+    }}).collect();
+
+    let dielectric = Dielectric { refractive_index: 1.5 };
+
     // Randomly generate a number of small spheres.
     let mut small_spheres: Vec<Sphere> = vec![];
     for a in -11..11 {
@@ -66,31 +85,20 @@ fn main() -> std::io::Result<()> {
             if (centre - Vec3 { x: 4.0, y: 0.2, z: 0.0 }).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Create a diffuse sphere
+                    let index = (random::<f64>() * 100.0).floor() as usize;
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: Box::new(Lambertian {
-                            albedo: Vec3 {
-                                x: random::<f64>() * random::<f64>(),
-                                y: random::<f64>() * random::<f64>(),
-                                z: random::<f64>() * random::<f64>(),
-                            }
-                        })
+                        material: &lambertians[index]
                     })
                 }
                 else if choose_material < 0.95 {
+                    let index = (random::<f64>() * 100.0).floor() as usize;
                     // Create a metal sphere
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: Box::new(Metal {
-                            albedo: Vec3 {
-                                x: 0.5 * (1.0 + random::<f64>()),
-                                y: 0.5 * (1.0 + random::<f64>()),
-                                z: 0.5 * (1.0 + random::<f64>()),
-                            },
-                            fuzziness: 0.5
-                        })
+                        material: &metals[index]
                     })
                 }
                 else {
@@ -98,7 +106,7 @@ fn main() -> std::io::Result<()> {
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: Box::new(Dielectric { refractive_index: 1.5 })
+                        material: &dielectric
                     })
                 }
             }
@@ -106,11 +114,11 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: Box::new(Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }}) };
+    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: &Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }} };
     // Three more spheres that sit in the centre of the image.
-    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: Box::new(Dielectric { refractive_index: 1.5 }) };
-    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: Box::new(Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } }) };
-    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: Box::new(Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 }) };
+    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Dielectric { refractive_index: 1.5 } };
+    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } } };
+    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 } };
 
     let all_spheres: Vec<Sphere> = vec![
         small_spheres,

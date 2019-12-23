@@ -12,7 +12,7 @@ pub struct HitRecord<'a> {
     pub t: f64,
     pub p: Vec3,
     pub normal: Vec3,
-    pub material: &'a Box<dyn Material>
+    pub material: &'a dyn Material
 }
 
 impl Display for HitRecord<'_> {
