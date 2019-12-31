@@ -4,6 +4,7 @@ use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use rand::random;
 
+#[derive(Copy, Clone)]
 pub struct Dielectric {
     pub refractive_index: f64
 }

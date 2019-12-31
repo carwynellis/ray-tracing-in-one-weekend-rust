@@ -2,13 +2,14 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
-use crate::material::Material;
+use crate::material::MaterialEnum;
 use rand::prelude::*;
 
-pub struct Sphere<'a> {
+#[derive(Clone)]
+pub struct Sphere {
     pub centre: Vec3,
     pub radius: f64,
-    pub material: &'a dyn Material
+    pub material: MaterialEnum
 }
 
 pub fn random_point_in_unit_sphere() -> Vec3 {
@@ -22,7 +23,7 @@ pub fn random_point_in_unit_sphere() -> Vec3 {
     }
 }
 
-impl Hitable for Sphere<'_> {
+impl Hitable for Sphere {
     fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         let oc = r.origin - self.centre;
         let a = r.direction.dot(r.direction);
@@ -40,7 +41,7 @@ impl Hitable for Sphere<'_> {
                     t: solution1,
                     p: intersection_point,
                     normal: (intersection_point - self.centre) / self.radius,
-                    material: self.material,
+                    material: self.material.clone(),
                 };
                 return Some(hit_record);
             }
@@ -52,7 +53,7 @@ impl Hitable for Sphere<'_> {
                     t: solution2,
                     p: intersection_point,
                     normal: (intersection_point - self.centre) / self.radius,
-                    material: self.material,
+                    material: self.material.clone(),
                 };
                 return Some(hit_record);
             }
@@ -72,7 +73,7 @@ mod tests {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: &Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }},
+            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
@@ -88,7 +89,7 @@ mod tests {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: &Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }},
+            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },

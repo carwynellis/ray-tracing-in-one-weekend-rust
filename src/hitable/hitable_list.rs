@@ -31,13 +31,14 @@ mod tests {
     use crate::vec3::Vec3;
     use crate::hitable::sphere::Sphere;
     use crate::material::lambertian::Lambertian;
+    use crate::material::MaterialEnum;
 
     #[test]
     fn test_hit_returns_hit_record_if_one_of_the_objects_intersects_the_ray() {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: &Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }},
+            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },

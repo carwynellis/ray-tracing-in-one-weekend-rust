@@ -13,6 +13,7 @@ use raytracer::camera::Camera;
 use raytracer::material::lambertian::Lambertian;
 use raytracer::material::metal::Metal;
 use raytracer::material::dielectric::Dielectric;
+use raytracer::material::{Material, MaterialEnum};
 
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
@@ -89,7 +90,7 @@ fn main() -> std::io::Result<()> {
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: &lambertians[index]
+                        material: MaterialEnum::Lambertian(lambertians[index])
                     })
                 }
                 else if choose_material < 0.95 {
@@ -98,7 +99,7 @@ fn main() -> std::io::Result<()> {
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: &metals[index]
+                        material: MaterialEnum::Metal(metals[index])
                     })
                 }
                 else {
@@ -106,7 +107,7 @@ fn main() -> std::io::Result<()> {
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: &dielectric
+                        material: MaterialEnum::Dielectric(dielectric)
                     })
                 }
             }
@@ -114,11 +115,11 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: &Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }} };
+    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }}) };
     // Three more spheres that sit in the centre of the image.
-    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Dielectric { refractive_index: 1.5 } };
-    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } } };
-    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: &Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 } };
+    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 }) };
+    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } }) };
+    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Metal(Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 }) };
 
     let all_spheres: Vec<Sphere> = vec![
         small_spheres,
@@ -134,6 +135,7 @@ fn main() -> std::io::Result<()> {
     let world = HitableList {
         hitables: spheres,
     };
+
 
     let file_name = "image.ppm";
 

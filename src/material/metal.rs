@@ -4,6 +4,7 @@ use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use crate::hitable::sphere::random_point_in_unit_sphere;
 
+#[derive(Copy, Clone)]
 pub struct Metal {
     pub albedo: Vec3,
     pub fuzziness: f64
