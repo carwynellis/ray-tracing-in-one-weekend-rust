@@ -31,7 +31,7 @@ fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
 fn background_colour(ray: &Ray) -> Vec3 {
     let unit_direction = ray.direction.unit_vector();
     let t = 0.5 * (unit_direction.y + 1.0);
-    (1.0 - t) * Vec3 { x: 1.0, y: 1.0, z: 1.0 } + t * Vec3 { x: 0.5, y: 0.7, z: 1.0 }
+    (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
 }
 
 fn main() -> std::io::Result<()> {
@@ -39,8 +39,8 @@ fn main() -> std::io::Result<()> {
     let ny = 800;
     let samples = 1;
 
-    let look_from = Vec3 { x: 13.0, y: 2.0, z: 3.0 };
-    let look_at = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
+    let look_from = Vec3::new(13.0, 2.0, 3.0);
+    let look_at = Vec3::new(0.0, 0.0, 0.0);
     let focus_distance = 10.0;
 
     let camera = Camera::new(
@@ -58,23 +58,23 @@ fn main() -> std::io::Result<()> {
     for a in -11..11 {
         for b in -11..11 {
             let choose_material = random::<f64>();
-            let centre = Vec3 {
-                x: a as f64 + 0.9 * random::<f64>(),
-                y: 0.2,
-                z: b as f64 + 0.9 * random::<f64>()
-            };
-            if (centre - Vec3 { x: 4.0, y: 0.2, z: 0.0 }).length() > 0.9 {
+            let centre = Vec3::new(
+                a as f64 + 0.9 * random::<f64>(),
+                0.2,
+                b as f64 + 0.9 * random::<f64>()
+            );
+            if (centre - Vec3::new(4.0, 0.2, 0.0 )).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Create a diffuse sphere
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
                         material: MaterialEnum::Lambertian(Lambertian {
-                            albedo: Vec3 {
-                                x: random::<f64>() * random::<f64>(),
-                                y: random::<f64>() * random::<f64>(),
-                                z: random::<f64>() * random::<f64>(),
-                            }
+                            albedo: Vec3::new(
+                                random::<f64>() * random::<f64>(),
+                                random::<f64>() * random::<f64>(),
+                                random::<f64>() * random::<f64>(),
+                            )
                         })
                     })
                 }
@@ -84,11 +84,11 @@ fn main() -> std::io::Result<()> {
                         centre,
                         radius: 0.2,
                         material: MaterialEnum::Metal(Metal {
-                            albedo: Vec3 {
-                                x: 0.5 * (1.0 + random::<f64>()),
-                                y: 0.5 * (1.0 + random::<f64>()),
-                                z: 0.5 * (1.0 + random::<f64>()),
-                            },
+                            albedo: Vec3::new(
+                                0.5 * (1.0 + random::<f64>()),
+                                0.5 * (1.0 + random::<f64>()),
+                                0.5 * (1.0 + random::<f64>()),
+                            ),
                             fuzziness: 0.5
                         })
                     })
@@ -106,11 +106,11 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    let ground = Sphere { centre: Vec3 { x: 0.0, y: -1000.0, z: 0.0 }, radius: 1000.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 0.5, y: 0.5, z: 0.5 }}) };
+    let ground = Sphere { centre: Vec3::new(0.0, -1000.0, 0.0), radius: 1000.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.5, 0.5, 0.5)}) };
     // Three more spheres that sit in the centre of the image.
-    let glass_sphere = Sphere { centre: Vec3 { x: 0.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 }) };
-    let matte_sphere = Sphere { centre: Vec3 { x: -4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 0.4, y: 0.2, z: 0.1 } }) };
-    let metal_sphere = Sphere { centre: Vec3 { x: 4.0, y: 1.0, z: 0.0 }, radius: 1.0, material: MaterialEnum::Metal(Metal { albedo: Vec3 { x: 0.7, y: 0.6, z: 0.5 }, fuzziness: 0.0 }) };
+    let glass_sphere = Sphere { centre: Vec3::new(0.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 }) };
+    let matte_sphere = Sphere { centre: Vec3::new(-4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.4, 0.2, 0.1) }) };
+    let metal_sphere = Sphere { centre: Vec3::new(4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Metal(Metal { albedo: Vec3::new(0.7, 0.6, 0.5), fuzziness: 0.0 }) };
 
     let all_spheres: Vec<Sphere> = vec![
         small_spheres,
@@ -156,14 +156,9 @@ fn main() -> std::io::Result<()> {
             ) / samples as f64;
 
             // Apply simple square root gamma correction to generated values.
-            let gamma_corrected = Vec3 {
-                x: colour.x.sqrt(),
-                y: colour.y.sqrt(),
-                z: colour.z.sqrt(),
-            };
+            let gamma_corrected = Vec3::new(colour.x.sqrt(), colour.y.sqrt(), colour.z.sqrt());
 
             image_data.push(gamma_corrected);
-
         }
         let percent_complete = ((ny - j) as f64 / ny as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());

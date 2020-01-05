@@ -17,6 +17,11 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
+
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
+        Vec3 { x, y, z }
+    }
+
     // Alias x, y, z since we also use this class to store colour data.
     pub fn r(&self) -> f64 { self.x }
     pub fn g(&self) -> f64 { self.y }
@@ -135,6 +140,14 @@ impl Display for Vec3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_new() {
+        let x = 1.0;
+        let y = 2.0;
+        let z = 3.0;
+        assert_eq!(Vec3::new(x, y, z), Vec3 { x, y, z });
+    }
 
     #[test]
     fn test_colour_aliases() {
