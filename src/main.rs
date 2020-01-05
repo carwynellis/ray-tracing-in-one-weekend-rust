@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::prelude::*;
 use rand::prelude::*;
 use std::io::stdout;
-use std::borrow::Borrow;
 
 use raytracer::vec3::Vec3;
 use raytracer::ray::Ray;
@@ -54,25 +53,6 @@ fn main() -> std::io::Result<()> {
         focus_distance
     );
 
-    let lambertians: Vec<Lambertian> = (0..100).map(|_| { Lambertian {
-        albedo: Vec3 {
-            x: random::<f64>() * random::<f64>(),
-            y: random::<f64>() * random::<f64>(),
-            z: random::<f64>() * random::<f64>(),
-        }
-    }}).collect();
-
-    let metals: Vec<Metal> = (0..100).map(|_| { Metal {
-        albedo: Vec3 {
-            x: 0.5 * (1.0 + random::<f64>()),
-            y: 0.5 * (1.0 + random::<f64>()),
-            z: 0.5 * (1.0 + random::<f64>()),
-        },
-        fuzziness: 0.5
-    }}).collect();
-
-    let dielectric = Dielectric { refractive_index: 1.5 };
-
     // Randomly generate a number of small spheres.
     let mut small_spheres: Vec<Sphere> = vec![];
     for a in -11..11 {
@@ -86,20 +66,31 @@ fn main() -> std::io::Result<()> {
             if (centre - Vec3 { x: 4.0, y: 0.2, z: 0.0 }).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Create a diffuse sphere
-                    let index = (random::<f64>() * 100.0).floor() as usize;
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: MaterialEnum::Lambertian(lambertians[index])
+                        material: MaterialEnum::Lambertian(Lambertian {
+                            albedo: Vec3 {
+                                x: random::<f64>() * random::<f64>(),
+                                y: random::<f64>() * random::<f64>(),
+                                z: random::<f64>() * random::<f64>(),
+                            }
+                        })
                     })
                 }
                 else if choose_material < 0.95 {
-                    let index = (random::<f64>() * 100.0).floor() as usize;
                     // Create a metal sphere
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: MaterialEnum::Metal(metals[index])
+                        material: MaterialEnum::Metal(Metal {
+                            albedo: Vec3 {
+                                x: 0.5 * (1.0 + random::<f64>()),
+                                y: 0.5 * (1.0 + random::<f64>()),
+                                z: 0.5 * (1.0 + random::<f64>()),
+                            },
+                            fuzziness: 0.5
+                        })
                     })
                 }
                 else {
@@ -107,7 +98,7 @@ fn main() -> std::io::Result<()> {
                     small_spheres.push(Sphere {
                         centre,
                         radius: 0.2,
-                        material: MaterialEnum::Dielectric(dielectric)
+                        material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 })
                     })
                 }
             }
@@ -129,13 +120,12 @@ fn main() -> std::io::Result<()> {
     let mut spheres = vec![];
 
     for i in &all_spheres {
-        spheres.push(i.borrow() as &dyn Hitable)
+        spheres.push(i as &dyn Hitable)
     }
 
     let world = HitableList {
         hitables: spheres,
     };
-
 
     let file_name = "image.ppm";
 
