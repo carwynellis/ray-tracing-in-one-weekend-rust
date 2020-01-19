@@ -13,6 +13,7 @@ pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - (2.0 * v.dot(n) * n)
 }
 
+// TODO - make this private?
 pub trait Material {
     fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Ray;
     fn albedo(&self) -> Vec3;
@@ -42,6 +43,27 @@ impl Material for MaterialEnum {
             MaterialEnum::Metal(ref metal) => metal.albedo(),
             MaterialEnum::Dielectric(ref dielectric) => dielectric.albedo(),
         }
+    }
+
+}
+
+impl MaterialEnum {
+
+    pub fn dielectric(refractive_index: f64) -> MaterialEnum {
+        return MaterialEnum::Dielectric(Dielectric { refractive_index });
+    }
+
+    pub fn lambertian(r: f64, g: f64, b: f64) -> MaterialEnum {
+        return MaterialEnum::Lambertian(Lambertian {
+            albedo: Vec3::new(r, g, b)
+        })
+    }
+
+    pub fn metal(r: f64, g: f64, b: f64, fuzziness: f64) -> MaterialEnum {
+        return MaterialEnum::Metal(Metal {
+            albedo: Vec3::new(r, g, b),
+            fuzziness
+        })
     }
 
 }
