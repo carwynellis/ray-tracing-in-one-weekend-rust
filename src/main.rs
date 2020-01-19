@@ -7,7 +7,7 @@ use raytracer::vec3::Vec3;
 use raytracer::ray::Ray;
 use raytracer::hitable::hitable_list::HitableList;
 use raytracer::hitable::sphere::Sphere;
-use raytracer::hitable::Hitable;
+use raytracer::hitable::{Hitable, HitableEnum};
 use raytracer::camera::Camera;
 use raytracer::material::lambertian::Lambertian;
 use raytracer::material::metal::Metal;
@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
     );
 
     // Randomly generate a number of small spheres.
-    let mut small_spheres: Vec<Sphere> = vec![];
+    let mut small_spheres: Vec<HitableEnum> = vec![];
     for a in -11..11 {
         for b in -11..11 {
             let choose_material = random::<f64>();
@@ -66,7 +66,7 @@ fn main() -> std::io::Result<()> {
             if (centre - Vec3::new(4.0, 0.2, 0.0 )).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Create a diffuse sphere
-                    small_spheres.push(Sphere {
+                    small_spheres.push(HitableEnum::Sphere(Sphere {
                         centre,
                         radius: 0.2,
                         material: MaterialEnum::Lambertian(Lambertian {
@@ -76,11 +76,11 @@ fn main() -> std::io::Result<()> {
                                 random::<f64>() * random::<f64>(),
                             )
                         })
-                    })
+                    }))
                 }
                 else if choose_material < 0.95 {
                     // Create a metal sphere
-                    small_spheres.push(Sphere {
+                    small_spheres.push(HitableEnum::Sphere(Sphere {
                         centre,
                         radius: 0.2,
                         material: MaterialEnum::Metal(Metal {
@@ -91,40 +91,40 @@ fn main() -> std::io::Result<()> {
                             ),
                             fuzziness: 0.5
                         })
-                    })
+                    }))
                 }
                 else {
                     // Create a glass sphere
-                    small_spheres.push(Sphere {
+                    small_spheres.push(HitableEnum::Sphere(Sphere {
                         centre,
                         radius: 0.2,
                         material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 })
-                    })
+                    }))
                 }
             }
             else {  }
         }
     };
 
-    let ground = Sphere { centre: Vec3::new(0.0, -1000.0, 0.0), radius: 1000.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.5, 0.5, 0.5)}) };
+    let ground = HitableEnum::Sphere(Sphere { centre: Vec3::new(0.0, -1000.0, 0.0), radius: 1000.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.5, 0.5, 0.5)}) });
     // Three more spheres that sit in the centre of the image.
-    let glass_sphere = Sphere { centre: Vec3::new(0.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 }) };
-    let matte_sphere = Sphere { centre: Vec3::new(-4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.4, 0.2, 0.1) }) };
-    let metal_sphere = Sphere { centre: Vec3::new(4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Metal(Metal { albedo: Vec3::new(0.7, 0.6, 0.5), fuzziness: 0.0 }) };
+    let glass_sphere = HitableEnum::Sphere(Sphere { centre: Vec3::new(0.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Dielectric(Dielectric { refractive_index: 1.5 }) });
+    let matte_sphere = HitableEnum::Sphere(Sphere { centre: Vec3::new(-4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3::new(0.4, 0.2, 0.1) }) });
+    let metal_sphere = HitableEnum::Sphere(Sphere { centre: Vec3::new(4.0, 1.0, 0.0), radius: 1.0, material: MaterialEnum::Metal(Metal { albedo: Vec3::new(0.7, 0.6, 0.5), fuzziness: 0.0 }) });
 
-    let all_spheres: Vec<Sphere> = vec![
+    let all_spheres: Vec<HitableEnum> = vec![
         small_spheres,
         vec![ground, glass_sphere, matte_sphere, metal_sphere]
     ].into_iter().flatten().collect();
 
-    let mut spheres = vec![];
+//    let mut spheres = vec![];
 
-    for i in &all_spheres {
-        spheres.push(i as &dyn Hitable)
-    }
+//    for i in &all_spheres {
+//        spheres.push(i as &dyn Hitable)
+//    }
 
     let world = HitableList {
-        hitables: spheres,
+        hitables: all_spheres,
     };
 
     let file_name = "image.ppm";
