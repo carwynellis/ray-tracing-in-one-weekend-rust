@@ -6,7 +6,6 @@ use rand::prelude::*;
 
 use raytracer::camera::Camera;
 use raytracer::hitable::Hitable;
-use raytracer::hitable::hitable_list::HitableList;
 use raytracer::ray::Ray;
 use raytracer::scene::final_scene;
 use raytracer::vec3::Vec3;
@@ -14,7 +13,7 @@ use raytracer::vec3::Vec3;
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
 
-fn colour<T: Hitable>(r: Ray, world: &T, accumulator: Vec3, depth: i8) -> Vec3 {
+fn colour(r: Ray, world: &Hitable, accumulator: Vec3, depth: i8) -> Vec3 {
     match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
         Some(ref hit) if depth < MAXIMUM_RECURSION_DEPTH => {
             let scattered = hit.material.scatter(&r, &hit);
@@ -50,9 +49,7 @@ fn main() -> std::io::Result<()> {
         focus_distance
     );
 
-    let world = HitableList {
-        hitables: final_scene(),
-    };
+    let world = Hitable::hitable_list(final_scene());
 
     let file_name = "image.ppm";
 

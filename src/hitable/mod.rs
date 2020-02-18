@@ -23,37 +23,32 @@ impl Display for HitRecord {
     }
 }
 
-pub trait Hitable {
+trait _Hitable {
     fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
 }
 
-// TODO - like material, just trying this - better name?
 #[derive(Clone)]
-pub enum HitableEnum {
+pub enum Hitable {
     Sphere(Sphere),
     HitableList(HitableList),
 }
 
-impl Hitable for HitableEnum {
-
-    fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
-        match *self {
-            HitableEnum::Sphere(ref sphere) => sphere.hit(r, tmin, tmax),
-            HitableEnum::HitableList(ref hitable_list) => hitable_list.hit(r, tmin, tmax),
-        }
-    }
-
-}
-
 // Provide constructors for available hitables to clean up the API.
-impl HitableEnum {
+impl Hitable {
 
-    pub fn sphere(centre: Vec3, radius: f64, material: Material) -> HitableEnum {
-        HitableEnum::Sphere(Sphere { centre, radius, material })
+    pub fn sphere(centre: Vec3, radius: f64, material: Material) -> Hitable {
+        Hitable::Sphere(Sphere { centre, radius, material })
     }
 
-    pub fn hitable_list(hitables: Vec<HitableEnum>) -> HitableEnum {
-        HitableEnum::HitableList(HitableList { hitables })
+    pub fn hitable_list(hitables: Vec<Hitable>) -> Hitable {
+        Hitable::HitableList(HitableList { hitables })
+    }
+
+    pub fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+        match *self {
+            Hitable::Sphere(ref sphere) => sphere.hit(r, tmin, tmax),
+            Hitable::HitableList(ref hitable_list) => hitable_list.hit(r, tmin, tmax),
+        }
     }
 
 }

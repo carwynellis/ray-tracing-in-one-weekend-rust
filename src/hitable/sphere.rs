@@ -1,7 +1,7 @@
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
-use crate::hitable::Hitable;
+use crate::hitable::_Hitable;
 use crate::material::Material;
 use rand::prelude::*;
 
@@ -23,7 +23,7 @@ pub fn random_point_in_unit_sphere() -> Vec3 {
     }
 }
 
-impl Hitable for Sphere {
+impl _Hitable for Sphere {
     fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         let oc = r.origin - self.centre;
         let a = r.direction.dot(r.direction);
