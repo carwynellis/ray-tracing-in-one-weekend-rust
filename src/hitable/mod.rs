@@ -44,3 +44,16 @@ impl Hitable for HitableEnum {
     }
 
 }
+
+// Provide constructors for available hitables to clean up the API.
+impl HitableEnum {
+
+    pub fn sphere(centre: Vec3, radius: f64, material: MaterialEnum) -> HitableEnum {
+        HitableEnum::Sphere(Sphere { centre, radius, material })
+    }
+
+    pub fn hitable_list(hitables: Vec<HitableEnum>) -> HitableEnum {
+        HitableEnum::HitableList(HitableList { hitables })
+    }
+
+}
