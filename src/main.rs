@@ -7,7 +7,6 @@ use rand::prelude::*;
 use raytracer::camera::Camera;
 use raytracer::hitable::Hitable;
 use raytracer::hitable::hitable_list::HitableList;
-use raytracer::material::Material;
 use raytracer::ray::Ray;
 use raytracer::scene::final_scene;
 use raytracer::vec3::Vec3;

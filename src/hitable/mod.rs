@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 use crate::ray::Ray;
-use crate::material::MaterialEnum;
+use crate::material::Material;
 
 use std::fmt::{Display, Formatter, Error};
 use crate::hitable::sphere::Sphere;
@@ -14,7 +14,7 @@ pub struct HitRecord {
     pub t: f64,
     pub p: Vec3,
     pub normal: Vec3,
-    pub material: MaterialEnum
+    pub material: Material
 }
 
 impl Display for HitRecord {
@@ -48,7 +48,7 @@ impl Hitable for HitableEnum {
 // Provide constructors for available hitables to clean up the API.
 impl HitableEnum {
 
-    pub fn sphere(centre: Vec3, radius: f64, material: MaterialEnum) -> HitableEnum {
+    pub fn sphere(centre: Vec3, radius: f64, material: Material) -> HitableEnum {
         HitableEnum::Sphere(Sphere { centre, radius, material })
     }
 

@@ -1,5 +1,5 @@
 use crate::vec3::Vec3;
-use crate::material::{Material, reflect};
+use crate::material::{_Material, reflect};
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use rand::random;
@@ -26,7 +26,7 @@ impl Dielectric {
     }
 }
 
-impl Material for Dielectric {
+impl _Material for Dielectric {
     fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Ray {
         let reflected = reflect(ray_in.direction.unit_vector(), hit.normal);
         let (outward_normal, ni_over_nt, cosine) = if ray_in.direction.dot(hit.normal) > 0.0 {

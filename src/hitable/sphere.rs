@@ -2,14 +2,14 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::HitRecord;
 use crate::hitable::Hitable;
-use crate::material::MaterialEnum;
+use crate::material::Material;
 use rand::prelude::*;
 
 #[derive(Clone)]
 pub struct Sphere {
     pub centre: Vec3,
     pub radius: f64,
-    pub material: MaterialEnum
+    pub material: Material
 }
 
 pub fn random_point_in_unit_sphere() -> Vec3 {
@@ -73,7 +73,7 @@ mod tests {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
+            material: Material::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
@@ -89,7 +89,7 @@ mod tests {
         let sphere = Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
+            material: Material::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         };
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },

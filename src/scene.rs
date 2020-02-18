@@ -1,10 +1,9 @@
 use crate::hitable::HitableEnum;
 use rand::random;
 use crate::vec3::Vec3;
-use crate::material::MaterialEnum;
+use crate::material::Material;
 
 pub fn final_scene() -> Vec<HitableEnum> {
-    // TODO - can we collect instead of using a mutable vec?
     // Randomly generate a number of small spheres.
     let mut small_spheres: Vec<HitableEnum> = vec![];
     let radius = 0.2;
@@ -22,7 +21,7 @@ pub fn final_scene() -> Vec<HitableEnum> {
                     small_spheres.push(HitableEnum::sphere(
                         centre,
                         radius,
-                        MaterialEnum::lambertian(
+                        Material::lambertian(
                             random::<f64>() * random::<f64>(),
                             random::<f64>() * random::<f64>(),
                             random::<f64>() * random::<f64>(),
@@ -34,7 +33,7 @@ pub fn final_scene() -> Vec<HitableEnum> {
                     small_spheres.push(HitableEnum::sphere(
                         centre,
                         radius,
-                        MaterialEnum::metal(
+                        Material::metal(
                             0.5 * (1.0 + random::<f64>()),
                             0.5 * (1.0 + random::<f64>()),
                             0.5 * (1.0 + random::<f64>()),
@@ -47,7 +46,7 @@ pub fn final_scene() -> Vec<HitableEnum> {
                     small_spheres.push(HitableEnum::sphere(
                         centre,
                         radius,
-                        MaterialEnum::dielectric(1.5)
+                        Material::dielectric(1.5)
                     ))
                 }
             }
@@ -55,11 +54,11 @@ pub fn final_scene() -> Vec<HitableEnum> {
         }
     };
 
-    let ground = HitableEnum::sphere(Vec3::new(0.0, -1000.0, 0.0), 1000.0, MaterialEnum::lambertian(0.5, 0.5, 0.5));
+    let ground = HitableEnum::sphere(Vec3::new(0.0, -1000.0, 0.0), 1000.0, Material::lambertian(0.5, 0.5, 0.5));
     // Three more spheres that sit in the centre of the image.
-    let glass_sphere = HitableEnum::sphere(Vec3::new(0.0, 1.0, 0.0), 1.0, MaterialEnum::dielectric(1.5));
-    let matte_sphere = HitableEnum::sphere(Vec3::new(-4.0, 1.0, 0.0), 1.0, MaterialEnum::lambertian(0.4, 0.2, 0.1));
-    let metal_sphere = HitableEnum::sphere(Vec3::new(4.0, 1.0, 0.0), 1.0, MaterialEnum::metal(0.7, 0.6, 0.5, 0.0));
+    let glass_sphere = HitableEnum::sphere(Vec3::new(0.0, 1.0, 0.0), 1.0, Material::dielectric(1.5));
+    let matte_sphere = HitableEnum::sphere(Vec3::new(-4.0, 1.0, 0.0), 1.0, Material::lambertian(0.4, 0.2, 0.1));
+    let metal_sphere = HitableEnum::sphere(Vec3::new(4.0, 1.0, 0.0), 1.0, Material::metal(0.7, 0.6, 0.5, 0.0));
 
     let all_spheres: Vec<HitableEnum> = vec![
         small_spheres,

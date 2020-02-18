@@ -31,7 +31,7 @@ mod tests {
     use crate::vec3::Vec3;
     use crate::hitable::sphere::Sphere;
     use crate::material::lambertian::Lambertian;
-    use crate::material::MaterialEnum;
+    use crate::material::Material;
     use crate::hitable::HitableEnum;
 
     #[test]
@@ -39,7 +39,7 @@ mod tests {
         let sphere = HitableEnum::Sphere(Sphere {
             centre: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             radius: 1.0,
-            material: MaterialEnum::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
+            material: Material::Lambertian(Lambertian { albedo: Vec3 { x: 1.0, y: 1.0, z: 1.0 }}),
         });
         let ray = Ray {
             origin: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
