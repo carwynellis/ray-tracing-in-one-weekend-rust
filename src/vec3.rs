@@ -41,7 +41,7 @@ impl Vec3 {
     }
 
     // Compute the dot product of this and another Vec3
-    pub fn dot(&self, other: Vec3) -> f64 {
+    pub fn dot(&self, other: &Vec3) -> f64 {
         (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
     }
 
@@ -247,7 +247,7 @@ mod tests {
     fn test_dot_product() {
         let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
         let v2 = Vec3 { x: 2.0, y: 2.0, z: 2.0 };
-        assert_eq!(v1.dot(v2), 12.0)
+        assert_eq!(v1.dot(&v2), 12.0)
     }
 
     #[test]

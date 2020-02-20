@@ -12,7 +12,7 @@ pub struct Dielectric {
 impl Dielectric {
     pub fn refract(&self, v: Vec3, n: Vec3, ni_over_nt: f64) -> Vec3 {
         let unit_vector_of_v = v.unit_vector();
-        let dt = unit_vector_of_v.dot(n);
+        let dt = unit_vector_of_v.dot(&n);
         let discriminant = 1.0 - (ni_over_nt * ni_over_nt * ( 1.0 - (dt * dt)));
         return if discriminant > 0.0 { (ni_over_nt * (unit_vector_of_v - (n * dt))) - (n * discriminant.sqrt()) }
         else { v };
@@ -29,11 +29,11 @@ impl Dielectric {
 impl _Material for Dielectric {
     fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Ray {
         let reflected = reflect(ray_in.direction.unit_vector(), hit.normal);
-        let (outward_normal, ni_over_nt, cosine) = if ray_in.direction.dot(hit.normal) > 0.0 {
-            (-hit.normal, self.refractive_index, self.refractive_index * ray_in.direction.dot(hit.normal) / ray_in.direction.length())
+        let (outward_normal, ni_over_nt, cosine) = if ray_in.direction.dot(&hit.normal) > 0.0 {
+            (-hit.normal, self.refractive_index, self.refractive_index * ray_in.direction.dot(&hit.normal) / ray_in.direction.length())
         }
         else {
-            (hit.normal, 1.0 / self.refractive_index, -ray_in.direction.dot(hit.normal) / ray_in.direction.length())
+            (hit.normal, 1.0 / self.refractive_index, -ray_in.direction.dot(&hit.normal) / ray_in.direction.length())
         };
 
         let refracted = self.refract(ray_in.direction, outward_normal, ni_over_nt);

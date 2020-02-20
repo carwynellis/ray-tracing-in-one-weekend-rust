@@ -33,7 +33,7 @@ fn background_colour(ray: &Ray) -> Vec3 {
 fn main() -> std::io::Result<()> {
     let nx = 1200;
     let ny = 800;
-    let samples = 1;
+    let samples = 10;
 
     let look_from = Vec3::new(13.0, 2.0, 3.0);
     let look_at = Vec3::new(0.0, 0.0, 0.0);

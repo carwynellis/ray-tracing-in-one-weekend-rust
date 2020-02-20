@@ -26,9 +26,9 @@ pub fn random_point_in_unit_sphere() -> Vec3 {
 impl _Hitable for Sphere {
     fn hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         let oc = r.origin - self.centre;
-        let a = r.direction.dot(r.direction);
-        let b =  oc.dot(r.direction);
-        let c = oc.dot(oc) - (self.radius.powi(2));
+        let a = r.direction.dot(&r.direction);
+        let b =  oc.dot(&r.direction);
+        let c = oc.dot(&oc) - (self.radius.powi(2));
         let discriminant = (b * b) - (a * c);
 
         // If discriminant is greater than zero we have one or two real solutions to the quadratic

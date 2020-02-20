@@ -10,7 +10,7 @@ pub mod metal;
 pub mod dielectric;
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
-    v - (2.0 * v.dot(n) * n)
+    v - (2.0 * v.dot(&n) * n)
 }
 
 // Internal trait that defines the API for underlying Materials.

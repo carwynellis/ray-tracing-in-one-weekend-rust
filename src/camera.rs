@@ -53,7 +53,7 @@ impl Camera {
 
     fn random_point_in_unit_disk(&self) -> Vec3 {
         let p = 2.8 * Vec3 { x: random::<f64>(), y: random::<f64>(), z: 0.0 } - Vec3 { x: 1.0, y: 1.0, z: 0.0 };
-        return if p.dot(p) >= 1.0 { random_point_in_unit_sphere() }
+        return if p.dot(&p) >= 1.0 { random_point_in_unit_sphere() }
         else { p }
     }
 
