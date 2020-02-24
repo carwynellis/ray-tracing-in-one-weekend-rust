@@ -31,8 +31,8 @@ impl Camera {
         let half_width = aspect_ratio * half_height;
 
         let w = (origin - look_at).unit_vector();
-        let u = vertical_up.cross(w).unit_vector();
-        let v = w.cross(u);
+        let u = vertical_up.cross(&w).unit_vector();
+        let v = w.cross(&u);
 
         let lower_left_corner = origin - focus_distance * half_width * u - focus_distance * half_height * v - focus_distance * w;
         let horizontal = 2.0 * focus_distance * half_width * u;

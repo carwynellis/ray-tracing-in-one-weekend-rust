@@ -6,7 +6,6 @@ use std::ops::Div;
 use std::cmp::PartialEq;
 use std::fmt::{Display, Formatter, Error};
 
-// TODO - should we be taking references to another vector where we operate on another vector?
 // Class representing a point in three dimensional space.
 // This is also used to store colour data during rendering.
 #[derive(Debug, Copy, Clone)]
@@ -47,7 +46,7 @@ impl Vec3 {
 
     // Compute the cross product of this and another Vec3
     // Implementation verified with https://betterexplained.com/articles/cross-product/
-    pub fn cross(&self, other: Vec3) -> Vec3 {
+    pub fn cross(&self, other: &Vec3) -> Vec3 {
         Vec3 {
             x: (self.y * other.z) - (self.z * other.y),
             y: -((self.x * other.z) - (self.z * other.x)),
@@ -254,6 +253,6 @@ mod tests {
     fn test_cross_product() {
         let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
         let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
-        assert_eq!(v1.cross(v2), Vec3 { x: -3.0, y: 6.0, z: -3.0 })
+        assert_eq!(v1.cross(&v2), Vec3 { x: -3.0, y: 6.0, z: -3.0 })
     }
 }
