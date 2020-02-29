@@ -13,6 +13,10 @@ use raytracer::vec3::Vec3;
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
 
+const WIDTH: i16 = 1200; // Image width - pixels
+const HEIGHT: i16 = 800; // Image height - pixels
+const SAMPLES: i16 = 10; // Samples per pixel
+
 fn colour(r: Ray, world: &Hitable, accumulator: Vec3, depth: i8) -> Vec3 {
     match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
         Some(ref hit) if depth < MAXIMUM_RECURSION_DEPTH => {
@@ -31,10 +35,6 @@ fn background_colour(ray: &Ray) -> Vec3 {
 }
 
 fn main() -> std::io::Result<()> {
-    let nx = 1200;
-    let ny = 800;
-    let samples = 10;
-
     let look_from = Vec3::new(13.0, 2.0, 3.0);
     let look_at = Vec3::new(0.0, 0.0, 0.0);
     let focus_distance = 10.0;
@@ -44,7 +44,7 @@ fn main() -> std::io::Result<()> {
         look_at,
         Vec3 { x: 0.0, y: 1.0, z: 0.0 },
         20.0,
-        nx as f64 / ny as f64,
+        WIDTH as f64 / HEIGHT as f64,
         0.1,
         focus_distance
     );
@@ -56,7 +56,7 @@ fn main() -> std::io::Result<()> {
     let mut file = File::create(file_name)?;
 
     // Write PPM file header.
-    file.write_fmt(format_args!("P3\n{}\n{}\n255\n", nx, ny))?;
+    file.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
 
     let max = 255.99;
 
@@ -65,26 +65,26 @@ fn main() -> std::io::Result<()> {
     let mut image_data = vec!();
 
     println!("Rendering scene to {}", file_name);
-    for j in (0..ny).rev() {
-        for i in 0..nx {
+    for j in (0..HEIGHT).rev() {
+        for i in 0..WIDTH {
             // Sample the pixel a number of times with a random offset and average the result to
             // antialias the overall image.
-            let colour: Vec3 = (0..samples).map(|_| {
-                let u = (i as f64 + random::<f64>()) / nx as f64;
-                let v = (j as f64 + random::<f64>()) / ny as f64;
+            let colour: Vec3 = (0..SAMPLES).map(|_| {
+                let u = (i as f64 + random::<f64>()) / WIDTH as f64;
+                let v = (j as f64 + random::<f64>()) / HEIGHT as f64;
                 let r = camera.get_ray(u, v);
                 colour(r, &world, background_colour(&r), 0)
             }).fold(
                 Vec3 { x: 0.0, y: 0.0, z: 0.0},
                 |sum, v| sum + v
-            ) / samples as f64;
+            ) / SAMPLES as f64;
 
             // Apply simple square root gamma correction to generated values.
             let gamma_corrected = Vec3::new(colour.x.sqrt(), colour.y.sqrt(), colour.z.sqrt());
 
             image_data.push(gamma_corrected);
         }
-        let percent_complete = ((ny - j) as f64 / ny as f64) * 100.0;
+        let percent_complete = ((HEIGHT - j) as f64 / HEIGHT as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());
         stdout().flush()?;
     }
