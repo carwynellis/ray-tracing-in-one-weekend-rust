@@ -13,9 +13,9 @@ use raytracer::vec3::Vec3;
 const MAXIMUM_RECURSION_DEPTH: i8 = 50;
 const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zero.
 
-const WIDTH: i16 = 1200; // Image width - pixels
-const HEIGHT: i16 = 800; // Image height - pixels
-const SAMPLES: i16 = 10; // Samples per pixel
+const WIDTH: i64 = 1200; // Image width - pixels
+const HEIGHT: i64 = 800; // Image height - pixels
+const SAMPLES: i64 = 1; // Samples per pixel
 
 fn colour(r: Ray, world: &Hitable, accumulator: Vec3, depth: i8) -> Vec3 {
     match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
@@ -32,6 +32,23 @@ fn background_colour(ray: &Ray) -> Vec3 {
     let unit_direction = ray.direction.unit_vector();
     let t = 0.5 * (unit_direction.y + 1.0);
     (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+}
+
+fn render_pixel(x: i64, y: i64, world: &Hitable, camera: &Camera) -> Vec3 {
+    // Sample the pixel a number of times with a random offset and average the result to
+    // antialias the overall image.
+    let colour: Vec3 = (0..SAMPLES).map(|_| {
+        let u = (x as f64 + random::<f64>()) / WIDTH as f64;
+        let v = (y as f64 + random::<f64>()) / HEIGHT as f64;
+        let r = camera.get_ray(u, v);
+        colour(r, world, background_colour(&r), 0)
+    }).fold(
+        Vec3 { x: 0.0, y: 0.0, z: 0.0},
+        |sum, v| sum + v
+    ) / SAMPLES as f64;
+
+    // Apply simple square root gamma correction to generated values.
+    return Vec3::new(colour.x.sqrt(), colour.y.sqrt(), colour.z.sqrt());
 }
 
 fn main() -> std::io::Result<()> {
@@ -58,32 +75,12 @@ fn main() -> std::io::Result<()> {
     // Write PPM file header.
     file.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
 
-    let max = 255.99;
-
-    // Take writing to file off render path and do it at the end. Any faster?
     // TODO - refactor to map over a range so we don't need a mut vec here?
     let mut image_data = vec!();
 
     println!("Rendering scene to {}", file_name);
     for j in (0..HEIGHT).rev() {
-        for i in 0..WIDTH {
-            // Sample the pixel a number of times with a random offset and average the result to
-            // antialias the overall image.
-            let colour: Vec3 = (0..SAMPLES).map(|_| {
-                let u = (i as f64 + random::<f64>()) / WIDTH as f64;
-                let v = (j as f64 + random::<f64>()) / HEIGHT as f64;
-                let r = camera.get_ray(u, v);
-                colour(r, &world, background_colour(&r), 0)
-            }).fold(
-                Vec3 { x: 0.0, y: 0.0, z: 0.0},
-                |sum, v| sum + v
-            ) / SAMPLES as f64;
-
-            // Apply simple square root gamma correction to generated values.
-            let gamma_corrected = Vec3::new(colour.x.sqrt(), colour.y.sqrt(), colour.z.sqrt());
-
-            image_data.push(gamma_corrected);
-        }
+        for i in 0..WIDTH { image_data.push(render_pixel(i, j, &world, &camera)); }
         let percent_complete = ((HEIGHT - j) as f64 / HEIGHT as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());
         stdout().flush()?;
@@ -92,6 +89,8 @@ fn main() -> std::io::Result<()> {
     // TODO - look into buffered writers...
     // Build string first and then write to file....
     let mut formatted_data = "".to_string();
+
+    let max = 255.99;
 
     image_data.into_iter().for_each(|pixel| {
         let line = format!("{} {} {}\n",
