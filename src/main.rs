@@ -75,24 +75,23 @@ fn main() -> std::io::Result<()> {
     // Write PPM file header.
     file.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
 
-    // TODO - refactor to map over a range so we don't need a mut vec here?
-    let mut image_data = vec!();
-
     println!("Rendering scene to {}", file_name);
-    for j in (0..HEIGHT).rev() {
-        for i in 0..WIDTH { image_data.push(render_pixel(i, j, &world, &camera)); }
+
+    let image_data: Vec<Vec<Vec3>> = (0..HEIGHT).rev().into_iter().map(|j| {
+        let line =  (0..WIDTH).map(|i| return render_pixel(i, j, &world, &camera)).collect();
         let percent_complete = ((HEIGHT - j) as f64 / HEIGHT as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());
-        stdout().flush()?;
-    }
-
+        stdout().flush().expect("failed to flush stdout");
+        return line;
+    }).collect();
+    
     // TODO - look into buffered writers...
     // Build string first and then write to file....
     let mut formatted_data = "".to_string();
 
     let max = 255.99;
 
-    image_data.into_iter().for_each(|pixel| {
+    image_data.into_iter().flatten().for_each(|pixel| {
         let line = format!("{} {} {}\n",
            (max * pixel.r()) as i64,
            (max * pixel.g()) as i64,
