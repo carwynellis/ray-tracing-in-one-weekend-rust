@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::stdout;
+use std::io::{stdout, BufWriter};
 
 use rand::prelude::*;
 
@@ -15,7 +15,7 @@ const NEAR_ZERO: f64 = 0.001; // Treat hits that are less than this value as zer
 
 const WIDTH: i64 = 1200; // Image width - pixels
 const HEIGHT: i64 = 800; // Image height - pixels
-const SAMPLES: i64 = 1; // Samples per pixel
+const SAMPLES: i64 = 10; // Samples per pixel
 
 fn colour(r: Ray, world: &Hitable, accumulator: Vec3, depth: i8) -> Vec3 {
     match world.hit(&r, NEAR_ZERO, std::f64::MAX) {
@@ -70,11 +70,6 @@ fn main() -> std::io::Result<()> {
 
     let file_name = "image.ppm";
 
-    let mut file = File::create(file_name)?;
-
-    // Write PPM file header.
-    file.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
-
     println!("Rendering scene to {}", file_name);
 
     let image_data: Vec<Vec<Vec3>> = (0..HEIGHT).rev().into_iter().map(|j| {
@@ -85,23 +80,25 @@ fn main() -> std::io::Result<()> {
         return line;
     }).collect();
     
-    // TODO - look into buffered writers...
-    // Build string first and then write to file....
-    let mut formatted_data = "".to_string();
+    let file = File::create(file_name).expect("Unable to open file for writing");
+    let mut file_writer = BufWriter::new(file);
+
+    // Write PPM file header.
+    file_writer.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
 
     let max = 255.99;
 
     image_data.into_iter().flatten().for_each(|pixel| {
-        let line = format!("{} {} {}\n",
+        file_writer.write_fmt(format_args!("{} {} {}\n",
            (max * pixel.r()) as i64,
            (max * pixel.g()) as i64,
            (max * pixel.b()) as i64,
-        );
-        formatted_data.push_str(&line);
+        )).expect("Failed to write to file")
     });
 
-    file.write_all(formatted_data.as_ref()).expect("Error writing to image file");
+    file_writer.flush().expect("Error flushing file writer");
 
     println!("\nFinished");
+
     Ok(())
 }
