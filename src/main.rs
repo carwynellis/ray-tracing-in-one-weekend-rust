@@ -68,7 +68,7 @@ fn main() -> std::io::Result<()> {
 
     let world = Hitable::hitable_list(final_scene());
 
-    let file_name = "image.ppm";
+    let file_name = "image.png";
 
     println!("Rendering scene to {}", file_name);
 
@@ -80,23 +80,32 @@ fn main() -> std::io::Result<()> {
         return line;
     }).collect();
     
-    let file = File::create(file_name).expect("Unable to open file for writing");
-    let mut file_writer = BufWriter::new(file);
-
-    // Write PPM file header.
-    file_writer.write_fmt(format_args!("P3\n{}\n{}\n255\n", WIDTH, HEIGHT))?;
-
     let max = 255.99;
 
-    image_data.into_iter().flatten().for_each(|pixel| {
-        file_writer.write_fmt(format_args!("{} {} {}\n",
-           (max * pixel.r()) as i64,
-           (max * pixel.g()) as i64,
-           (max * pixel.b()) as i64,
-        )).expect("Failed to write to file")
-    });
+    // TODO - tidy this up
+    let png_file = File::create(file_name).expect("Unable to open PNG file for writing");
+    let w = BufWriter::new(png_file);
+    let mut encoder = png::Encoder::new(w, WIDTH as u32, HEIGHT as u32);
 
-    file_writer.flush().expect("Error flushing file writer");
+    encoder.set_color(png::ColorType::RGBA);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder.set_compression(png::Compression::Best);
+
+    let mut png_writer = encoder.write_header().unwrap();
+
+    // Convert image data into RGBA
+    let rgba_data: Vec<Vec<u8>> = image_data.into_iter().flatten().map(|pixel| {
+        return vec!(
+            (max * pixel.r()) as u8,
+            (max * pixel.g()) as u8,
+            (max * pixel.b()) as u8,
+            255,
+        );
+    }).collect();
+
+    let png_data: Vec<u8> = rgba_data.into_iter().flatten().collect();
+
+    png_writer.write_image_data(&png_data).unwrap();
 
     println!("\nFinished");
 
