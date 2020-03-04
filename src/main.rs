@@ -80,9 +80,6 @@ fn main() -> std::io::Result<()> {
         return line;
     }).collect();
     
-    let max = 255.99;
-
-    // TODO - tidy this up
     let png_file = File::create(file_name).expect("Unable to open PNG file for writing");
     let w = BufWriter::new(png_file);
     let mut encoder = png::Encoder::new(w, WIDTH as u32, HEIGHT as u32);
@@ -93,19 +90,22 @@ fn main() -> std::io::Result<()> {
 
     let mut png_writer = encoder.write_header().unwrap();
 
+    // TODO - better expressed as an extension method?
+    fn component_value(v: f64) -> u8 { (v * 255.99) as u8 }
+
     // Convert image data into RGBA
     let rgba_data: Vec<Vec<u8>> = image_data.into_iter().flatten().map(|pixel| {
         return vec!(
-            (max * pixel.r()) as u8,
-            (max * pixel.g()) as u8,
-            (max * pixel.b()) as u8,
+            component_value(pixel.r()),
+            component_value(pixel.g()),
+            component_value(pixel.b()),
             255,
         );
     }).collect();
 
     let png_data: Vec<u8> = rgba_data.into_iter().flatten().collect();
 
-    png_writer.write_image_data(&png_data).unwrap();
+    png_writer.write_image_data(&png_data).expect("Failed to write image data");
 
     println!("\nFinished");
 
