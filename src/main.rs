@@ -1,8 +1,10 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{stdout, BufWriter};
+use std::sync::atomic::{AtomicI64, Ordering};
 
 use rand::prelude::*;
+use rayon::prelude::*;
 
 use raytracer::camera::Camera;
 use raytracer::hitable::Hitable;
@@ -72,9 +74,12 @@ fn main() -> std::io::Result<()> {
 
     println!("Rendering scene to {}", file_name);
 
-    let image_data: Vec<Vec<Vec3>> = (0..HEIGHT).rev().into_iter().map(|j| {
+    static PROGRESS: AtomicI64 = AtomicI64::new(0);
+
+    let image_data: Vec<Vec<Vec3>> = (0..HEIGHT).into_par_iter().map(|j| {
         let line =  (0..WIDTH).map(|i| return render_pixel(i, j, &world, &camera)).collect();
-        let percent_complete = ((HEIGHT - j) as f64 / HEIGHT as f64) * 100.0;
+        PROGRESS.fetch_add(1, Ordering::Relaxed);
+        let percent_complete = (PROGRESS.load(Ordering::Relaxed) as f64 / HEIGHT as f64) * 100.0;
         print!("\r{percent:>4}% complete ", percent = percent_complete.round());
         stdout().flush().expect("failed to flush stdout");
         return line;
@@ -94,7 +99,7 @@ fn main() -> std::io::Result<()> {
     fn component_value(v: f64) -> u8 { (v * 255.99) as u8 }
 
     // Convert image data into RGBA
-    let rgba_data: Vec<Vec<u8>> = image_data.into_iter().flatten().map(|pixel| {
+    let rgba_data: Vec<Vec<u8>> = image_data.into_iter().rev().flatten().map(|pixel| {
         return vec!(
             component_value(pixel.r()),
             component_value(pixel.g()),
